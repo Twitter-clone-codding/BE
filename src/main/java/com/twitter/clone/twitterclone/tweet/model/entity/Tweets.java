@@ -23,7 +23,7 @@ public class Tweets extends Auditing {
 
     private String hashtag;
 
-    private String views;
+    private Integer views;
 
     @Column
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
@@ -33,4 +33,6 @@ public class Tweets extends Auditing {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "tweetId")
     private Tweets retweets;
+
+
 }

@@ -1,6 +1,9 @@
 package com.twitter.clone.twitterclone.global.util;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -8,13 +11,13 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-public class S3Utill {
+public class S3Util {
 
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-    //2년전 막차 -> Spring 취업 무난하게 -> AWS / Kubernetes + Spring
+
     public String saveFile(MultipartFile multipartFile, String originalFilename)  {
 
         ObjectMetadata metadata = new ObjectMetadata();
@@ -24,7 +27,7 @@ public class S3Utill {
         try {
             amazonS3.putObject(bucket, originalFilename, multipartFile.getInputStream(), metadata);
         }catch (IOException e){
-            throw new FileException(FileErrorCode.FILE_ERROR);
+            System.out.println(e);
         }
         return amazonS3.getUrl(bucket, originalFilename).toString();
     }

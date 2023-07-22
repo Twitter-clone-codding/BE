@@ -1,20 +1,15 @@
 package com.twitter.clone.twitterclone.tweet.controller;
 
-import com.twitter.clone.twitterclone.global.execption.CustomExecption;
 import com.twitter.clone.twitterclone.global.model.response.CustomResponse;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import com.twitter.clone.twitterclone.global.util.S3Util;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/tweet")
+@RequestMapping("/api/tweets")
+@RequiredArgsConstructor
 public class TweetController {
 
-    @PostMapping
-    public CustomResponse<String> ar(){
-        return CustomResponse.success("test", "test");
-    }
 
 }

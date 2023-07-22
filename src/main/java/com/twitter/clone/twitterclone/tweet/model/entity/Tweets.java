@@ -1,14 +1,16 @@
 package com.twitter.clone.twitterclone.tweet.model.entity;
 
 import com.twitter.clone.twitterclone.global.model.entity.Auditing;
+import com.twitter.clone.twitterclone.tweet.model.request.TweetsPostRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.apache.catalina.User;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Tweets extends Auditing {
 
     @Id
@@ -35,4 +37,22 @@ public class Tweets extends Auditing {
     private Tweets retweets;
 
 
+    public Tweets(TweetsPostRequest tweet, List<String> imageUrl) {
+        this.content = tweet.tweet().content();
+        this.hashtag = tweet.tweet().hashtag();
+        this.views = 0;
+        for (String imageUrls : imageUrl) {
+            this.tweetImgList.add(imageUrls);
+        }
+    }
+
+    public Tweets(TweetsPostRequest tweet, List<String> imageName, Tweets mainTweet) {
+        this.content = tweet.tweet().content();
+        this.hashtag = tweet.tweet().hashtag();
+        this.views = 0;
+        for (String imageNames : imageName) {
+            this.tweetImgList.add(imageNames);
+        }
+        this.retweets = mainTweet;
+    }
 }

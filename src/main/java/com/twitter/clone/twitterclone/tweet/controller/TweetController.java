@@ -3,10 +3,14 @@ package com.twitter.clone.twitterclone.tweet.controller;
 import com.twitter.clone.twitterclone.global.model.response.CustomResponse;
 import com.twitter.clone.twitterclone.global.util.S3Util;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsDeleteRequest;
+import com.twitter.clone.twitterclone.tweet.model.request.TweetsPostRequest;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetsListResponse;
+import com.twitter.clone.twitterclone.tweet.model.response.TweetsResponse;
 import com.twitter.clone.twitterclone.tweet.model.type.ResponseMessage;
 import com.twitter.clone.twitterclone.tweet.service.TweetService;
+import com.twitter.clone.twitterclone.tweet.service.TweetService2;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,14 +22,15 @@ import java.util.List;
 public class TweetController {
 
     private final TweetService tweetService;
-    private final S3Util s3Util;
 
-    @PostMapping("/posts")
-    public CustomResponse<?> postTweet(
-            @RequestPart("test") MultipartFile test
-    ) {
-        s3Util.saveFile(test,"123464532432dasdas.png");
-        return null;
+    private final TweetService2 tweetService2;
+
+    @PostMapping(name = "/posts")
+    public CustomResponse<String> postTweet(
+            @ModelAttribute TweetsPostRequest request
+            ) {
+        tweetService2.postTweet(request);
+        return CustomResponse.success(ResponseMessage.TWEET_POST.getMsg(), null);
     }
 
     @GetMapping("/posts")
@@ -36,8 +41,7 @@ public class TweetController {
 
         List<TweetsListResponse> tweet = tweetService.tweetPostList(page, limit);
 
-        return CustomResponse.success(ResponseMessage.TWEET_LIST.getMsg(), tweet); //TODO: 추가해야함.
-
+        return CustomResponse.success(ResponseMessage.TWEET_DELETE.getMsg(), tweet); //TODO: 추가해야함.
     }
 
     @DeleteMapping("/posts")
@@ -49,8 +53,10 @@ public class TweetController {
     }
 
     @GetMapping("/{MainTweetid}")
-    public CustomResponse<?> getDetailTweet() {
-
-        return null;
+    public CustomResponse<TweetsResponse> getDetailTweet(
+            @PathVariable Long MainTweetid
+    ) {
+        TweetsResponse detailTweet = tweetService2.getDetailTweet(MainTweetid);
+        return CustomResponse.success(ResponseMessage.TWEET_DETAIL.getMsg(), detailTweet);
     }
 }

@@ -2,13 +2,13 @@ package com.twitter.clone.twitterclone.global.util;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.twitter.clone.twitterclone.global.execption.type.FileErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -21,28 +21,41 @@ public class S3Util {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-
+    /**
+     * 이미지 파일 확장자
+     * @param originalFileName
+     * @return
+     */
     private String[] extensionList = {
-            "image/jpeg",
-            "image/jpg",
-            "image/png"
+            ".jpeg",
+            ".jpg",
+            ".png"
     };
 
-    public String saveFile(MultipartFile multipartFile, String originalFilename) {
+    /**
+     * 이미지 파일 이름 생성
+     * @param multipartFile
+     * @param filename
+     * @return
+     */
+    public String saveFile(MultipartFile multipartFile, String filename) {
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(multipartFile.getSize());
         metadata.setContentType(multipartFile.getContentType());
 
         try {
-            amazonS3.putObject(bucket, originalFilename, multipartFile.getInputStream(), metadata);
+            amazonS3.putObject(bucket, filename, multipartFile.getInputStream(), metadata);
         } catch (IOException e) {
             System.out.println(e);
         }
-        return amazonS3.getUrl(bucket, originalFilename).toString();
+        return amazonS3.getUrl(bucket, filename).toString();
     }
-
-    // 이미지 파일 s3에 저장 후 Dto 리스트에 담아서 반환
+    /**
+     * 이미지 파일 s3에 저장 후 Dto 리스트에 담아서 반환
+     * @param multipartFile
+     * @return
+     */
     public List<String> saveListFile(List<MultipartFile> multipartFile) {
         List<String> imgUrlList = new ArrayList<>();
 
@@ -50,33 +63,42 @@ public class S3Util {
         for (MultipartFile file : multipartFile) {
             String fileName = getImageName(file.getOriginalFilename());
             saveFile(file, fileName);
+            imgUrlList.add(fileName);
         }
         return imgUrlList;
     }
-
-    public void deleteImage(String originalFilename) {
-        amazonS3.deleteObject(bucket, originalFilename);
+    /**
+     * 이미지 삭제
+     * @param filename
+     */
+    public void deleteImage(String filename) {
+        amazonS3.deleteObject(bucket, filename);
     }
-
-    private String getImageName(String originalFilename) {
+    /**
+     * 이미지 이름 생성
+     * @param getOriginalFilename
+     * @return
+     */
+    private String getImageName(String getOriginalFilename) {
+        if (getOriginalFilename.length() == 0) {
+            throw new IllegalArgumentException(FileErrorCode.NO_FILE_NAME.getErrorMsg());
+        }
+        int dotIndex = getOriginalFilename.lastIndexOf('.');
+        String extension = getOriginalFilename.substring(dotIndex);
         UUID uuid = UUID.randomUUID();
-        return uuid + "_" + getFileExtension(originalFilename);
+        return uuid + getFileExtension(extension);
     }
-
-    // 파일 유효성 검사
-    private String getFileExtension(String fileName) {
-        if (fileName.length() == 0) {
-            throw new IllegalArgumentException("파일 이름이 없습니다.");
+    /**
+     * 이미지 파일인지 확인
+     * @param extension
+     * @return
+     */
+    private String getFileExtension(String extension) {
+        for (String extensions : extensionList) {
+            if (extension.equals(extensions)) {
+                return extension;
+            }
         }
-
-        for (String extension : extensionList) {
-
-        }
-        String idxFileName = fileName.substring(fileName.lastIndexOf("."));
-//        if (!fileValidate.contains(idxFileName)) {
-//            throw new IllegalArgumentException("이미지 파일이 아닙니다.");
-//        }
-        return fileName.substring(fileName.lastIndexOf("."));
+        throw new IllegalArgumentException(FileErrorCode.NO_IMAGEFILE.getErrorMsg());
     }
-
 }

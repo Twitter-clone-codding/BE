@@ -85,8 +85,7 @@ public class S3Util {
         }
         int dotIndex = getOriginalFilename.lastIndexOf('.');
         String extension = getOriginalFilename.substring(dotIndex);
-        UUID uuid = UUID.randomUUID();
-        return uuid + getFileExtension(extension);
+        return System.nanoTime() + getFileExtension(extension);
     }
     /**
      * 이미지 파일인지 확인

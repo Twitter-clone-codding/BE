@@ -21,17 +21,20 @@ public class TweetController {
 
     @PostMapping("/posts")
     public CustomResponse<?> postTweet(
-            @RequestParam Integer page,
-            @RequestParam Integer limit
     ) {
-        List<TweetsListResponse> tweet = tweetService.tweetPostList(page, limit);
-        return CustomResponse.success(ResponseMessage.TWEET_DELETE.getMsg(), tweet); //TODO: 추가해야함.
+        return null;
     }
 
     @GetMapping("/posts")
-    public CustomResponse<?> getTweet() {
+    public CustomResponse<?> getListTweet(
+            @RequestParam Integer page,
+            @RequestParam Integer limit
+    ) {
 
-        return null;
+        List<TweetsListResponse> tweet = tweetService.tweetPostList(page, limit);
+
+        return CustomResponse.success(ResponseMessage.TWEET_DELETE.getMsg(), tweet); //TODO: 추가해야함.
+
     }
 
     @DeleteMapping("/posts")

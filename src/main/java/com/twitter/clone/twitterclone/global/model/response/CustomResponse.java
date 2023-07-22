@@ -18,8 +18,8 @@ public class CustomResponse<T> {
                 .body(errorCode.geterrorMsg());
     }
 
-    public static <T> CustomResponse<T> success(String success, T result){
-        return new CustomResponse<>(success,result);
+    public static <T> CustomResponse<T> success(String msg, T result){
+        return new CustomResponse<>(msg,result);
     }
 
 

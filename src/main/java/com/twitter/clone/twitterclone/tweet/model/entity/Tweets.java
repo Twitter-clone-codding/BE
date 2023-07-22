@@ -2,9 +2,13 @@ package com.twitter.clone.twitterclone.tweet.model.entity;
 
 import com.twitter.clone.twitterclone.global.model.entity.Auditing;
 import jakarta.persistence.*;
+import lombok.Getter;
 import org.apache.catalina.User;
 
+import java.util.List;
+
 @Entity
+@Getter
 public class Tweets extends Auditing {
 
     @Id
@@ -21,7 +25,10 @@ public class Tweets extends Auditing {
 
     private String views;
 
-//    private String likes;
+    @Column
+    @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
+    private List<String> tweetImgList;
+
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "tweetId")

@@ -11,11 +11,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RequiredArgsConstructor
 public class GlobalExceptionAdvice {
 
-
     @ExceptionHandler(TweetExceptionImpl.class)
     public ResponseEntity<?> tweetErrorHandler(TweetExceptionImpl e) {
         return CustomResponse.error(e);
     }
-
 
 }

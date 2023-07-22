@@ -25,6 +25,7 @@ public class TweetController {
 
     private final TweetService2 tweetService2;
 
+
     @PostMapping(value = "/posts",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public CustomResponse<String> postTweet(
             @RequestPart TweetsPostRequest TweetsPostRequest,
@@ -42,7 +43,7 @@ public class TweetController {
 
         List<TweetsListResponse> tweet = tweetService.tweetPostList(page, limit);
 
-        return CustomResponse.success(ResponseMessage.TWEET_DELETE.getMsg(), tweet); //TODO: 추가해야함.
+        return CustomResponse.success(ResponseMessage.TWEET_LIST.getMsg(), tweet); //TODO: 추가해야함.
     }
 
     @DeleteMapping("/posts")

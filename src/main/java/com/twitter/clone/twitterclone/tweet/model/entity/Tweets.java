@@ -41,18 +41,14 @@ public class Tweets extends Auditing {
         this.content = tweet.tweet().content();
         this.hashtag = tweet.tweet().hashtag();
         this.views = 0;
-        for (String imageUrls : imageUrl) {
-            this.tweetImgList.add(imageUrls);
-        }
+        this.tweetImgList = imageUrl;
     }
 
-    public Tweets(TweetsPostRequest tweet, List<String> imageName, Tweets mainTweet) {
+    public Tweets(TweetsPostRequest tweet, List<String> imageUrl, Tweets mainTweet) {
         this.content = tweet.tweet().content();
         this.hashtag = tweet.tweet().hashtag();
         this.views = 0;
-        for (String imageNames : imageName) {
-            this.tweetImgList.add(imageNames);
-        }
+        this.tweetImgList = imageUrl;
         this.retweets = mainTweet;
     }
 }

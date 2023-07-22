@@ -43,15 +43,7 @@ public class S3Util {
         // forEach 구문을 통해 multipartFile로 넘어온 파일들 하나씩 fileNameList에 추가
         for (MultipartFile file : multipartFile) {
             String fileName = getImageName(file.getOriginalFilename());
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentLength(file.getSize());
-            objectMetadata.setContentType(file.getContentType());
-
-            try (InputStream inputStream = file.getInputStream()) {
-                amazonS3.putObject(bucket, fileName, inputStream, objectMetadata);
-            } catch (IOException e) {
-                System.out.println(e);
-            }
+            saveFile(file, fileName);
         }
         return imgUrlList;
     }

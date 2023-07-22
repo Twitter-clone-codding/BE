@@ -22,7 +22,13 @@ public class S3Util {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public String saveFile(MultipartFile multipartFile, String originalFilename)  {
+    private String[] extensionList = {
+            "image/jpeg",
+            "image/jpg",
+            "image/png"
+    };
+
+    public String saveFile(MultipartFile multipartFile, String originalFilename) {
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(multipartFile.getSize());
@@ -30,7 +36,7 @@ public class S3Util {
 
         try {
             amazonS3.putObject(bucket, originalFilename, multipartFile.getInputStream(), metadata);
-        }catch (IOException e){
+        } catch (IOException e) {
             System.out.println(e);
         }
         return amazonS3.getUrl(bucket, originalFilename).toString();
@@ -48,11 +54,11 @@ public class S3Util {
         return imgUrlList;
     }
 
-    public void deleteImage(String originalFilename)  {
+    public void deleteImage(String originalFilename) {
         amazonS3.deleteObject(bucket, originalFilename);
     }
 
-    public String getImageName(String originalFilename) {
+    private String getImageName(String originalFilename) {
         UUID uuid = UUID.randomUUID();
         return uuid + "_" + getFileExtension(originalFilename);
     }
@@ -62,17 +68,14 @@ public class S3Util {
         if (fileName.length() == 0) {
             throw new IllegalArgumentException("파일 이름이 없습니다.");
         }
-        ArrayList<String> fileValidate = new ArrayList<>();
-        fileValidate.add(".jpg");
-        fileValidate.add(".jpeg");
-        fileValidate.add(".png");
-        fileValidate.add(".JPG");
-        fileValidate.add(".JPEG");
-        fileValidate.add(".PNG");
-        String idxFileName = fileName.substring(fileName.lastIndexOf("."));
-        if (!fileValidate.contains(idxFileName)) {
-            throw new IllegalArgumentException("이미지 파일이 아닙니다.");
+
+        for (String extension : extensionList) {
+
         }
+        String idxFileName = fileName.substring(fileName.lastIndexOf("."));
+//        if (!fileValidate.contains(idxFileName)) {
+//            throw new IllegalArgumentException("이미지 파일이 아닙니다.");
+//        }
         return fileName.substring(fileName.lastIndexOf("."));
     }
 

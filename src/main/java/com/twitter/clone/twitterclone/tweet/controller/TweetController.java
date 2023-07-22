@@ -11,5 +11,27 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class TweetController {
 
+    @PostMapping("/posts")
+    public CustomResponse<?> postTweet() {
 
+        return null;
+    }
+
+    @GetMapping("/posts")
+    public CustomResponse<?> getTweet() {
+
+        return null;
+    }
+
+    @DeleteMapping("/posts")
+    public CustomResponse<?> deleteTweet() {
+
+        return null;
+    }
+
+    @GetMapping("/{MainTweetid}")
+    public CustomResponse<?> getDetailTweet() {
+
+        return null;
+    }
 }

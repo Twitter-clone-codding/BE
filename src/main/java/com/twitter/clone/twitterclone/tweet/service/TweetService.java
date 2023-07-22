@@ -24,7 +24,7 @@ public class TweetService {
     private final TweetsRepository tweetsRepository;
     private final S3Util s3Util;
 
-    private String s3Url = "";
+    private String s3Url = "https://twitter-image-storegy.s3.ap-northeast-2.amazonaws.com";
 
     @Transactional
     public void tweetDelete(TweetsDeleteRequest request) {

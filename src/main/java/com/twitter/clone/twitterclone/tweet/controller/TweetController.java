@@ -18,10 +18,13 @@ import java.util.List;
 public class TweetController {
 
     private final TweetService tweetService;
+    private final S3Util s3Util;
 
     @PostMapping("/posts")
     public CustomResponse<?> postTweet(
+            @RequestPart("test") MultipartFile test
     ) {
+        s3Util.saveFile(test,"123464532432dasdas.png");
         return null;
     }
 
@@ -33,7 +36,7 @@ public class TweetController {
 
         List<TweetsListResponse> tweet = tweetService.tweetPostList(page, limit);
 
-        return CustomResponse.success(ResponseMessage.TWEET_DELETE.getMsg(), tweet); //TODO: 추가해야함.
+        return CustomResponse.success(ResponseMessage.TWEET_LIST.getMsg(), tweet); //TODO: 추가해야함.
 
     }
 

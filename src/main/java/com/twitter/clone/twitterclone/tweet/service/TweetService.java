@@ -84,14 +84,12 @@ public class TweetService {
         }else {
             // 파일저장
             List<String> imgUrl = s3Util.saveListFile(img);
-            for (String s : imgUrl) {
-                System.out.println(s);
-            }
+
             // 메인 트윗을 저장
             tweetsRepository.save(new Tweets(tweet, imgUrl));
         }
     }
-
+    @Transactional(readOnly = true)
     public TweetsResponse getDetailTweet(Long mainTweetid) { // 유저 추가는 나중에
         // 메인 트윗 유무
         Tweets tweets = tweetsRepository.findById(mainTweetid).orElseThrow(
@@ -101,9 +99,10 @@ public class TweetService {
                 tweets.getContent()
                 , tweets.getHashtag()
                 , tweets.getViews()
-                , tweets.getTweetImgList()
+                , tweets.getTweetImgList().stream()
+                    .map(fileName -> s3Url + "/" + fileName)
+                    .collect(Collectors.toList())
                 , tweets.getCreatedAt()
         );
     }
-
 }

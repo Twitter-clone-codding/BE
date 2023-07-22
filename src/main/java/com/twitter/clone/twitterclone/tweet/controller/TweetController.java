@@ -21,7 +21,7 @@ public class TweetController {
 
     private final TweetService tweetService;
 
-    @PostMapping(value = "/posts",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/posts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public CustomResponse<String> postTweet(
             @RequestPart TweetsPostRequest TweetsPostRequest,
             @RequestPart(required = false) List<MultipartFile> img

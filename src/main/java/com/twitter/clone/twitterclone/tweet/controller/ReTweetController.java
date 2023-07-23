@@ -6,10 +6,7 @@ import com.twitter.clone.twitterclone.tweet.model.response.ReTweetsListResponse;
 import com.twitter.clone.twitterclone.tweet.model.type.ResponseMessage;
 import com.twitter.clone.twitterclone.tweet.service.ReTweetService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,11 +20,12 @@ public class ReTweetController {
     @GetMapping("/{MainTweeid}")
     public CustomResponse<?> getListReTweet(
             @RequestParam Integer page,
-            @RequestParam Integer limit
+            @RequestParam Integer limit,
+            @PathVariable Long MainTweeid
     ) {
 
-        List<ReTweetsListResponse> tweet = retweetService.retweetPostList(page, limit);
+        List<ReTweetsListResponse> retweet = retweetService.retweetPostList(page, limit, MainTweeid);
 
-        return CustomResponse.success(ResponseMessage.TWEET_LIST.getMsg(), tweet); //TODO: 추가해야함.
+        return CustomResponse.success(ResponseMessage.TWEET_LIST.getMsg(), retweet);
     }
 }

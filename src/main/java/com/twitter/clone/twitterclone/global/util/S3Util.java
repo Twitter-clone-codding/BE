@@ -2,6 +2,7 @@ package com.twitter.clone.twitterclone.global.util;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.twitter.clone.twitterclone.global.execption.FileExceptionImpl;
 import com.twitter.clone.twitterclone.global.execption.type.FileErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -26,11 +27,7 @@ public class S3Util {
      * @param originalFileName
      * @return
      */
-    private String[] extensionList = {
-            ".jpeg",
-            ".jpg",
-            ".png"
-    };
+    private static final Set<String> EXTENSIONS = Set.of(".jpeg", ".jpg", ".png");
 
     /**
      * 이미지 파일 이름 생성
@@ -81,8 +78,8 @@ public class S3Util {
      * @return
      */
     private String getImageName(String getOriginalFilename) {
-        if (getOriginalFilename.length() == 0) {
-            throw new IllegalArgumentException(FileErrorCode.NO_FILE_NAME.getErrorMsg());
+        if (getOriginalFilename.isEmpty()) {
+            throw new FileExceptionImpl(FileErrorCode.NO_FILE_NAME);
         }
         int dotIndex = getOriginalFilename.lastIndexOf('.');
         String extension = getOriginalFilename.substring(dotIndex);
@@ -94,11 +91,9 @@ public class S3Util {
      * @return
      */
     private String getFileExtension(String extension) {
-        for (String extensions : extensionList) {
-            if (extension.equals(extensions)) {
-                return extension;
-            }
+        if (EXTENSIONS.contains(extension)) {
+            return extension;
         }
-        throw new IllegalArgumentException(FileErrorCode.NO_IMAGEFILE.getErrorMsg());
+        throw new FileExceptionImpl(FileErrorCode.NO_IMAGEFILE);
     }
 }

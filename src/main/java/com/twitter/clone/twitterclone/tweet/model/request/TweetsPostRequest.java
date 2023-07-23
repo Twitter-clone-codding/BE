@@ -7,7 +7,6 @@ import java.util.List;
 public record TweetsPostRequest(
         Long mainTweetId,       // 부모아이디
         TweetsRequest tweet  // 트윗내용
-//        List<MultipartFile> img // 이미지
 ) {
 }
 

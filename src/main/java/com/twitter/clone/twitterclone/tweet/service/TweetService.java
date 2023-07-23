@@ -74,12 +74,13 @@ public class TweetService {
 
     }
 
+    @Transactional
     public void postTweet(TweetsPostRequest tweet, List<MultipartFile> img) {
         /**
          * 이미지 저장후에 게시글이 저장 실패시 이미지 처리 생각해야함
          */
         List<String> imgUrl = Collections.emptyList();
-        if (!img.isEmpty()) {
+        if (!Objects.isNull(img)) {
             imgUrl = s3Util.saveListFile(img);
         }
         if (!Objects.isNull(tweet.mainTweetId())) { // 메인 트윗 유무

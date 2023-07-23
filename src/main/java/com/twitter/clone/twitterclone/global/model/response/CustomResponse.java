@@ -1,6 +1,6 @@
 package com.twitter.clone.twitterclone.global.model.response;
 
-import com.twitter.clone.twitterclone.global.execption.CustomExecption;
+import com.twitter.clone.twitterclone.global.execption.CustomException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,13 +13,13 @@ public class CustomResponse<T> {
     private final T result;
 
 
-    public static ResponseEntity error(CustomExecption errorCode){
+    public static ResponseEntity error(CustomException errorCode){
         return ResponseEntity.status(errorCode.getHttpStatus())
-                .body(errorCode.geterrorMsg());
+                .body(errorCode.getErrorMsg());
     }
 
-    public static <T> CustomResponse<T> success(String success, T result){
-        return new CustomResponse<>(success,result);
+    public static <T> CustomResponse<T> success(String msg, T result){
+        return new CustomResponse<>(msg,result);
     }
 
 

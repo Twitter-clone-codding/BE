@@ -1,5 +1,6 @@
 package com.twitter.clone.twitterclone.global.execption;
 
+import com.twitter.clone.twitterclone.global.execption.type.FileErrorCode;
 import com.twitter.clone.twitterclone.global.execption.type.TweetErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -7,18 +8,20 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public class TweetExceptionImpl extends RuntimeException implements CustomException {
+public class FileExceptionImpl extends RuntimeException implements CustomExecption{
 
-    private final TweetErrorCode tweetErrorCode;
+    private final FileErrorCode fileErrorCode;
 
 
     @Override
     public HttpStatus getHttpStatus() {
-        return tweetErrorCode.getHttpStatus();
+        return fileErrorCode.getHttpStatus();
     }
 
     @Override
-    public String getErrorMsg() {
-        return tweetErrorCode.getErrorMsg();
+    public String geterrorMsg() {
+        return fileErrorCode.getErrorMsg();
     }
 }
+
+

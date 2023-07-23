@@ -53,7 +53,7 @@ public class TweetService {
         Page<Tweets> tweets = tweetsRepository.findAll(pageable);
 
         List<TweetsListResponse> tweetsListResponses = tweets.stream()
-                .filter(a -> a.getRetweets() != null)
+                .filter(a -> a.getRetweets() == null)
                 .map(a ->
                         new TweetsListResponse(
                                 a.getContent(),

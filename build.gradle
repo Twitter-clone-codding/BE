@@ -31,9 +31,11 @@ dependencies {
 
 	//JPA
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
 	//Database
 	runtimeOnly 'com.mysql:mysql-connector-j'
-	//S3를 위한 라이브러리
+
+	//AWS 위한 라이브러리
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
 }

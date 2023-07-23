@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum TweetErrorCode {
 
-    NO_TWEET(HttpStatus.ACCEPTED, "?");
+    NO_TWEET(HttpStatus.ACCEPTED, "트윗을 찾을수 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String errorMsg;

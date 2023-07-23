@@ -13,6 +13,7 @@ public class GlobalExceptionAdvice {
 
     @ExceptionHandler(TweetExceptionImpl.class)
     public ResponseEntity<?> tweetErrorHandler(TweetExceptionImpl e) {
+
         return CustomResponse.error(e);
     }
 

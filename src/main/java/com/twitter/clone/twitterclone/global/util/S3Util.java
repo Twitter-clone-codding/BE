@@ -49,6 +49,7 @@ public class S3Util {
         } catch (IOException e) {
             System.out.println(e);
         }
+        
         return amazonS3.getUrl(bucket, filename).toString();
     }
     /**

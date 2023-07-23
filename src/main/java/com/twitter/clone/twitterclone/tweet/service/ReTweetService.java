@@ -1,6 +1,6 @@
 package com.twitter.clone.twitterclone.tweet.service;
 
-import com.twitter.clone.twitterclone.global.util.S3Util;
+import org.springframework.transaction.annotation.Transactional;
 import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
 import com.twitter.clone.twitterclone.tweet.model.response.ReTweetsListResponse;
 import com.twitter.clone.twitterclone.tweet.repository.ReTweetsRepository;
@@ -21,24 +21,27 @@ public class ReTweetService {
     private final ReTweetsRepository reTweetsRepository;
 
     private String s3Url = "https://twitter-image-storegy.s3.ap-northeast-2.amazonaws.com";
-    public List<ReTweetsListResponse> retweetPostList(Integer page, Integer limit) {
+
+    @Transactional(readOnly = true)
+    public List<ReTweetsListResponse> retweetPostList(Integer page, Integer limit, Long tweetId) {
         Sort.Direction direction = Sort.Direction.DESC;
         Sort sort = Sort.by(direction, "createdAt");
 
         Pageable pageable = PageRequest.of(page, limit, sort);
-        Page<Tweets> retweets = reTweetsRepository.findAll(pageable);
+        Page<Tweets> retweets = reTweetsRepository.findAllByRetweets_Id(tweetId, pageable);
+        System.out.println("retweets = " + retweets);
 
         return retweets.stream()
-                .map(retwwet ->
+                .map(retweet ->
                         new ReTweetsListResponse(
-                                retwwet.getContent(),
-                                retwwet.getHashtag(),
+                                retweet.getContent(),
+                                retweet.getHashtag(),
 //                                retwwet.getHearts(),
-                                retwwet.getViews(),
-                                retwwet.getTweetImgList().stream()
+                                retweet.getViews(),
+                                retweet.getTweetImgList().stream()
                                         .map(fileName -> s3Url + "/" + fileName)
                                         .collect(Collectors.toList()),
-                                retwwet.getCreatedAt()
+                                retweet.getCreatedAt()
                         )
                 )
                 .collect(Collectors.toList());

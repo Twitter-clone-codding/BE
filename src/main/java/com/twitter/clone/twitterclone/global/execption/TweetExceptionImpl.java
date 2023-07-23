@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public class TweetExceptionImpl extends RuntimeException implements CustomExecption{
+public class TweetExceptionImpl extends RuntimeException implements CustomException {
 
     private final TweetErrorCode tweetErrorCode;
 
@@ -18,7 +18,7 @@ public class TweetExceptionImpl extends RuntimeException implements CustomExecpt
     }
 
     @Override
-    public String geterrorMsg() {
+    public String getErrorMsg() {
         return tweetErrorCode.getErrorMsg();
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public class FileExceptionImpl extends RuntimeException implements CustomExecption{
+public class FileExceptionImpl extends RuntimeException implements CustomException{
 
     private final FileErrorCode fileErrorCode;
 
@@ -19,9 +19,10 @@ public class FileExceptionImpl extends RuntimeException implements CustomExecpti
     }
 
     @Override
-    public String geterrorMsg() {
+    public String getErrorMsg() {
         return fileErrorCode.getErrorMsg();
     }
+
 }
 
 

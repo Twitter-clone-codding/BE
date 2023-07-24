@@ -30,7 +30,7 @@ public class JwtUtil {
     public static final String AUTHORIZATION_KEY = "auth";
 
     // Token 식별자
-    public static final String BEARER_PREFIX = "Bearere ";
+    public static final String BEARER_PREFIX = "Bearer ";
 
 
     // 토큰 만료시간

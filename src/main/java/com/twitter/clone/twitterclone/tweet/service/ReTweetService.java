@@ -1,5 +1,6 @@
 package com.twitter.clone.twitterclone.tweet.service;
 
+import com.twitter.clone.twitterclone.tweet.model.response.TweetUserResponse;
 import org.springframework.transaction.annotation.Transactional;
 import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
 import com.twitter.clone.twitterclone.tweet.model.response.ReTweetsListResponse;
@@ -29,12 +30,17 @@ public class ReTweetService {
 
         Pageable pageable = PageRequest.of(page, limit, sort);
         Page<Tweets> retweets = reTweetsRepository.findAllByRetweets_Id(tweetId, pageable);
-        System.out.println("retweets = " + retweets);
 
         return retweets.stream()
                 .map(retweet ->
                         new ReTweetsListResponse(
 //                                retweet.getId(),
+                                new TweetUserResponse(
+                                        retweet.getUser().getUserId(),
+                                        retweet.getUser().getNickname(),
+                                        retweet.getUser().getTagName(),
+                                        retweet.getUser().getProfileImageUrl()
+                                ),
                                 retweet.getContent(),
                                 retweet.getHashtag(),
                                 0,

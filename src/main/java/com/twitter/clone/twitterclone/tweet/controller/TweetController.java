@@ -27,9 +27,10 @@ public class TweetController {
     @PostMapping(value = "/posts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public CustomResponse<String> postTweet(
             @RequestPart TweetsPostRequest TweetsPostRequest,
-            @RequestPart(required = false) List<MultipartFile> img
+            @RequestPart(required = false) List<MultipartFile> img,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
             ) {
-        tweetService.postTweet(TweetsPostRequest, img);
+        tweetService.postTweet(TweetsPostRequest, img, userDetails);
         return CustomResponse.success(ResponseMessage.TWEET_POST.getMsg(), null);
     }
 

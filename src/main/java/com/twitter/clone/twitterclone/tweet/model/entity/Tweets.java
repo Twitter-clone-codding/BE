@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -20,10 +19,6 @@ public class Tweets extends Auditing {
     private Long id;
 
     private String content;
-
-//    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "user_id")
-//    private User userId;
 
     private String hashtag;
 
@@ -46,19 +41,21 @@ public class Tweets extends Auditing {
     @JoinColumn(name = "likes")
     private List<TweetLike> likes;
 
-    public Tweets(TweetsPostRequest tweet, List<String> imageUrl) {
+    public Tweets(TweetsPostRequest tweet, List<String> imageUrl, User user) {
         this.content = tweet.tweet().content();
         this.hashtag = tweet.tweet().hashtag();
         this.views = 0;
         this.tweetImgList = imageUrl;
+        this.user = user;
     }
 
-    public Tweets(TweetsPostRequest tweet, List<String> imageUrl, Tweets mainTweet) {
+    public Tweets(TweetsPostRequest tweet, List<String> imageUrl, Tweets mainTweet, User user) {
         this.content = tweet.tweet().content();
         this.hashtag = tweet.tweet().hashtag();
         this.views = 0;
         this.tweetImgList = imageUrl;
         this.retweets = mainTweet;
+        this.user = user;
     }
 
 

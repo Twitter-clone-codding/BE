@@ -54,7 +54,7 @@ public class TweetService {
     }
 
     @Transactional
-    public TweetListAndTotalPageResponse tweetPostList(Integer page, Integer limit) {
+    public TweetListAndTotalPageResponse tweetPostList(Integer page, Integer limit, UserDetailsImpl userDetails) {
         Sort.Direction direction = Sort.Direction.DESC;
         Sort sort = Sort.by(direction, "modifiedAt");
 
@@ -75,6 +75,7 @@ public class TweetService {
                                 a.getContent(),
                                 a.getHashtag(),
                                 likeRepository.findByTweetId(a).size(), //TODO 좋아요 갯수 추가 기능.
+                                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
                                 a.getViews(),
                                 a.getTweetImgList().stream()
                                         .map(fileName -> s3Url + "/" + fileName)
@@ -106,7 +107,7 @@ public class TweetService {
     }
 
     @Transactional
-    public TweetsResponse getDetailTweet(Long mainTweetId) { // 유저 추가는 나중에
+    public TweetsResponse getDetailTweet(Long mainTweetId, UserDetailsImpl userDetails) { // 유저 추가는 나중에
         // 메인 트윗 유무
         Tweets tweets = tweetsRepository.findById(mainTweetId).orElseThrow(
                 () -> new TweetExceptionImpl(TweetErrorCode.NO_TWEET)
@@ -127,6 +128,7 @@ public class TweetService {
                 tweets.getContent(),
                 tweets.getHashtag(),
                 likeRepository.findByTweetId(tweets).size(), //TODO 좋아요 갯수 추가 기능.
+                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
                 tweets.getViews(),
                 tweets.getTweetImgList().stream()
                         .map(fileName -> s3Url + "/" + fileName)

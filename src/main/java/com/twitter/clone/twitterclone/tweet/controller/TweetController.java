@@ -39,9 +39,10 @@ public class TweetController {
     @GetMapping("/posts")
     public CustomResponse<TweetListAndTotalPageResponse> getListTweet(
             @RequestParam Integer page,
-            @RequestParam Integer limit
+            @RequestParam Integer limit,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        TweetListAndTotalPageResponse tweetListAndTotalPageResponse = tweetService.tweetPostList(page, limit);
+        TweetListAndTotalPageResponse tweetListAndTotalPageResponse = tweetService.tweetPostList(page, limit, userDetails);
         return CustomResponse.success(ResponseMessage.TWEET_LIST.getMsg(), tweetListAndTotalPageResponse); //TODO: 추가해야함.
     }
     //이거 제꺼
@@ -56,9 +57,10 @@ public class TweetController {
 
     @GetMapping("/{MainTweetid}")
     public CustomResponse<TweetsResponse> getDetailTweet(
-            @PathVariable Long MainTweetid
+            @PathVariable Long MainTweetid,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        TweetsResponse detailTweet = tweetService.getDetailTweet(MainTweetid);
+        TweetsResponse detailTweet = tweetService.getDetailTweet(MainTweetid,userDetails);
         return CustomResponse.success(ResponseMessage.TWEET_DETAIL.getMsg(), detailTweet);
     }
 }

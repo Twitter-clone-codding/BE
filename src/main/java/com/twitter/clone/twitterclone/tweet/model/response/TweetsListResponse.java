@@ -8,6 +8,7 @@ public record TweetsListResponse(
         String content,
         String hashtag,
         Integer hearts,
+        Boolean heartCheck,
         Integer views,
         List<String> imgList
 ) {

@@ -1,6 +1,7 @@
 package com.twitter.clone.twitterclone.auth.common.model.entity;
 
 import com.twitter.clone.twitterclone.global.model.entity.Auditing;
+import com.twitter.clone.twitterclone.tweet.model.entity.TweetRecommendation;
 import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -46,6 +47,9 @@ public class User extends Auditing {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Tweets> tweetsList;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private List<TweetRecommendation> tweetRecommendationList;
 
     public User(String name, String email, String encodedPassword, String tagId, String profileImageUrl, String googleId) {
         this.nickname = name;

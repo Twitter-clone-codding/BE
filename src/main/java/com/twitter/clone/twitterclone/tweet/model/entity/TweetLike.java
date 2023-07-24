@@ -22,6 +22,10 @@ public class TweetLike {
     @JoinColumn(name = "tweetId")
     private Tweets tweetId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tweetRecommendationId")
+    private Tweets tweetRecommendationId;
+
     @Column
     private String email;
 

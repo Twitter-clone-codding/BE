@@ -10,6 +10,7 @@ public record TweetsResponse(
         String content,
         String hashtag,
         Integer hearts,
+        Boolean heartCheck,
         Integer views,
         //이미지
         List<String> imgList,

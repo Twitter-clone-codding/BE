@@ -36,7 +36,7 @@ public class EmailService {
         message.addRecipients(MimeMessage.RecipientType.TO, email);
         message.setSubject("twitter-clone 회원가입 인증 번호");
         message.setText("인증 번호 : " + emailCode, "utf-8", "html");
-        message.setFrom(new InternetAddress("vbc1124@naver.com","twitter-clone_Admin"));
+        message.setFrom(new InternetAddress("mailservicesoon@naver.com","twitter-clone_Admin"));
 
         return message;
     }

@@ -17,8 +17,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public
-class CustomOAuthUserService extends DefaultOAuth2UserService {
+public class CustomOAuthUserService extends DefaultOAuth2UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 

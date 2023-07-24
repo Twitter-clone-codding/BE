@@ -57,6 +57,12 @@ public class WebSecurityConfig {
         http.sessionManagement((sessionManagement) ->
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
+        http
+                .oauth2Login(oauth2Login -> oauth2Login
+                        .loginPage("/oauth/login") // OAuth2 로그인 페이지를 "/login"으로 설정
+                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(userService)) // OAuth2 로그인 후 사용자 정보를 가져오는 데 사용할 서비스를 userService로 설정
+                        .successHandler(oAuthLoginSuccessHandler) // OAuth2 로그인 성공 시 실행할 핸들러 설정
+                        .failureHandler(oAuthLoginFailureHandler)); // OAuth2 로그인 실패 시 실행할 핸들러 설정
 
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests

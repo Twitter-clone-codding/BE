@@ -7,10 +7,10 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum TweetErrorCode {
+public enum FileErrorCode {
 
-    NO_TWEET(HttpStatus.ACCEPTED, "트윗을 찾을수 없습니다.");
-
+    NO_FILE_NAME(HttpStatus.ACCEPTED, "파일 이름이 없습니다."),
+    NO_IMAGEFILE(HttpStatus.ACCEPTED, "이미지 파일이 아닙니다." );
 
     private final HttpStatus httpStatus;
     private final String errorMsg;

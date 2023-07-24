@@ -1,5 +1,9 @@
 package com.twitter.clone.twitterclone.tweet.service;
 
+import com.twitter.clone.twitterclone.auth.common.model.entity.User;
+import com.twitter.clone.twitterclone.auth.common.repository.UserRepository;
+import com.twitter.clone.twitterclone.following.model.entity.Following;
+import com.twitter.clone.twitterclone.following.repository.FollowingRepository;
 import com.twitter.clone.twitterclone.global.execption.TweetExceptionImpl;
 import com.twitter.clone.twitterclone.global.execption.type.TweetErrorCode;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
@@ -22,29 +26,75 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TweetService {
 
+    private final FollowingRepository followingRepository;
     private final TweetsRepository tweetsRepository;
     private final TweetLikeRepository likeRepository;
     private final S3Util s3Util;
 
     private String s3Url = "https://twitter-image-storegy.s3.ap-northeast-2.amazonaws.com";
 
+
+    @Transactional
+    public TweetListAndTotalPageResponse followingTweetPostList(Integer page, Integer limit, UserDetailsImpl userDetails) {
+        Sort.Direction direction = Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, "modifiedAt");
+
+        Pageable pageable = PageRequest.of(page, limit, sort);
+        List<Following> followinUserList = followingRepository.findAllByFollowUser(userDetails.getUser());
+
+        if (followinUserList.size() == 0){
+            //TODO: 팔로워가 없거나 팔로워의 게시글이 없을경우 에러 처리
+            return null;
+        }
+
+        //누가 팔로워 했는지 그 팔로워가 랜덤으로 가져올수 있게
+        Random random = new Random();
+        int randomInt = random.nextInt(followinUserList.size());
+        Page<Tweets> tweets = tweetsRepository.findAllByUser(followinUserList.get(randomInt).getUser(), pageable);
+
+        List<TweetsListResponse> tweetsListResponses = tweets.stream()
+                .filter(a -> a.getRetweets() == null)
+                .map(a ->
+                        new TweetsListResponse(
+                                a.getId(),
+                                new TweetUserResponse(
+                                        a.getUser().getUserId(),
+                                        a.getUser().getNickname(),
+                                        a.getUser().getTagName(),
+                                        a.getUser().getProfileImageUrl()
+                                ),
+                                a.getContent(),
+                                a.getHashtag(),
+                                likeRepository.findByTweetId(a).size(), //TODO 좋아요 갯수 추가 기능.
+                                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
+                                a.getViews(),
+                                a.getTweetImgList().stream()
+                                        .map(fileName -> s3Url + "/" + fileName)
+                                        .collect(Collectors.toList())
+                        )
+                )
+                .collect(Collectors.toList());
+
+        return new TweetListAndTotalPageResponse(tweetsListResponses, tweets.getTotalPages());
+
+    }
+
     @Transactional
     public void tweetDelete(TweetsDeleteRequest request, UserDetailsImpl userDetails) {
         Tweets tweets = tweetsRepository.findById(request.tweetId())
-                .orElseThrow(); //TODO: 에러 처리 해야 함.
+                .orElseThrow(() -> {
+                    throw new TweetExceptionImpl(TweetErrorCode.NO_TWEET);
+                });
 
         if (!isEqualUserId(userDetails.getUser().getUserId(), tweets.getUser().getUserId())) {
-            //TODO : 에러처리
+            throw new TweetExceptionImpl(TweetErrorCode.NOT_MY_TWEET);
         }
         for (String imgFileName : tweets.getTweetImgList()) {
             s3Util.deleteImage(imgFileName);

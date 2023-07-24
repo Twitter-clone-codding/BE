@@ -25,6 +25,17 @@ public class TweetController {
 
     private final TweetService tweetService;
 
+    @GetMapping("/following/list")
+    public CustomResponse<?> followingTweetList(
+            @RequestParam Integer page,
+            @RequestParam Integer limit,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        TweetListAndTotalPageResponse listAndTotalPageResponse = tweetService.followingTweetPostList(page, limit, userDetails);
+        return CustomResponse.success("성공적으로 트윗 조회를 하셨습니다.",listAndTotalPageResponse);
+    }
+
+
     @PostMapping(value = "/posts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public CustomResponse<String> postTweet(
             @RequestPart TweetsPostRequest TweetsPostRequest,
@@ -35,7 +46,7 @@ public class TweetController {
         return CustomResponse.success(ResponseMessage.TWEET_POST.getMsg(), null);
     }
 
-    //이거 제꺼
+
     @GetMapping("/posts")
     public CustomResponse<TweetListAndTotalPageResponse> getListTweet(
             @RequestParam Integer page,

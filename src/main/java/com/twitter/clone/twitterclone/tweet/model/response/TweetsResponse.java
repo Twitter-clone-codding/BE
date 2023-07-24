@@ -6,7 +6,7 @@ import java.util.List;
 public record TweetsResponse(
         //유저 정보
 //        Long id,
-//        UserDTO user,
+        TweetUserResponse user,
         String content,
         String hashtag,
         Integer hearts,

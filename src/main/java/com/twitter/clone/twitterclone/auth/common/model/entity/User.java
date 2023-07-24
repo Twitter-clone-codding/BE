@@ -1,10 +1,13 @@
 package com.twitter.clone.twitterclone.auth.common.model.entity;
 
 import com.twitter.clone.twitterclone.global.model.entity.Auditing;
+import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -41,6 +44,9 @@ public class User extends Auditing {
     @Column(name = "googleId", length = 100)
     private String googleId;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private List<Tweets> tweetsList;
+
     public User(String name, String email, String encodedPassword, String tagId, String profileImageUrl, String googleId) {
         this.nickname = name;
         this.email = email;
@@ -62,4 +68,7 @@ public class User extends Auditing {
         this.googleId = googleId;
         return this;
     }
+
+
+
 }

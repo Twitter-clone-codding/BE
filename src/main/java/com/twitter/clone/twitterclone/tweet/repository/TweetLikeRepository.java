@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface TweetsRepository extends JpaRepository<Tweets, Long> {
+public interface TweetLikeRepository extends JpaRepository<TweetLike, Long> {
+    Optional<TweetLike> findByTweetIdAndEmail(Tweets tweets, String email);
 
 }

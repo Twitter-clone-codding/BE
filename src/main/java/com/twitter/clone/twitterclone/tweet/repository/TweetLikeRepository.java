@@ -12,4 +12,6 @@ public interface TweetLikeRepository extends JpaRepository<TweetLike, Long> {
 
     List<TweetLike> findByTweetId(Tweets tweets);
 
+    Optional<TweetLike> findByEmail(String email);
+
 }

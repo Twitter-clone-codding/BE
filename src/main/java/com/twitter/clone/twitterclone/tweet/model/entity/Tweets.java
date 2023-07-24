@@ -38,7 +38,6 @@ public class Tweets extends Auditing {
     private User user;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "tweetId")
-    @JoinColumn(name = "likes")
     private List<TweetLike> likes;
 
     public Tweets(TweetsPostRequest tweet, List<String> imageUrl, User user) {

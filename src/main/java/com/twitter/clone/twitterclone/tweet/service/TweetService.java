@@ -10,6 +10,7 @@ import com.twitter.clone.twitterclone.tweet.model.request.TweetsPostRequest;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetUserResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetsListResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetsResponse;
+import com.twitter.clone.twitterclone.tweet.repository.TweetLikeRepository;
 import com.twitter.clone.twitterclone.tweet.repository.TweetsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 public class TweetService {
 
     private final TweetsRepository tweetsRepository;
+    private final TweetLikeRepository likeRepository;
     private final S3Util s3Util;
 
     private String s3Url = "https://twitter-image-storegy.s3.ap-northeast-2.amazonaws.com";
@@ -72,7 +74,7 @@ public class TweetService {
                                 ),
                                 a.getContent(),
                                 a.getHashtag(),
-                                0, //TODO 좋아요 갯수 추가 기능.
+                                likeRepository.findByTweetId(a).size(), //TODO 좋아요 갯수 추가 기능.
                                 a.getViews(),
                                 a.getTweetImgList().stream()
                                         .map(fileName -> s3Url + "/" + fileName)
@@ -120,11 +122,11 @@ public class TweetService {
                 ),
                 tweets.getContent(),
                 tweets.getHashtag(),
-                0,
+                likeRepository.findByTweetId(tweets).size(), //TODO 좋아요 갯수 추가 기능.
                 tweets.getViews(),
                 tweets.getTweetImgList().stream()
-                    .map(fileName -> s3Url + "/" + fileName)
-                    .collect(Collectors.toList()),
+                        .map(fileName -> s3Url + "/" + fileName)
+                        .collect(Collectors.toList()),
                 tweets.getCreatedAt()
         );
     }

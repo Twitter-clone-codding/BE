@@ -4,6 +4,8 @@ import com.twitter.clone.twitterclone.auth.common.model.entity.User;
 import com.twitter.clone.twitterclone.auth.common.repository.UserRepository;
 import com.twitter.clone.twitterclone.following.model.entity.Following;
 import com.twitter.clone.twitterclone.following.repository.FollowingRepository;
+import com.twitter.clone.twitterclone.global.execption.FollowingExceptionImpl;
+import com.twitter.clone.twitterclone.global.execption.type.FollowingErrorCode;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
 import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetListAndTotalPageResponse;
@@ -32,13 +34,13 @@ public class FollowingService {
 
     @Transactional
     public boolean followingUser(User user, Long followingUserId) {
-        User followingUser = userRepository.findById(
-                followingUserId
-        ).orElseThrow(); //TODO: 팔로잉할 유저가 없다면 에러 처리
+        User followingUser = userRepository.findById(followingUserId)
+                .orElseThrow(() -> {
+                    throw new FollowingExceptionImpl(FollowingErrorCode.NOT_FOLLOWING_USER);
+                });
 
         if (user.getUserId().equals(followingUser.getUserId())) {
-            //TODO: 본인한테 팔로워 걸시 에러 처리
-            return false;
+            throw new FollowingExceptionImpl(FollowingErrorCode.SELF_FOLLOWING_NOT_ALLOWED);
         }
 
         Optional<Following> following = followingRepository.findByFollowUserAndUser(followingUser, user);
@@ -47,13 +49,13 @@ public class FollowingService {
             followingRepository.delete(following.get());
             return false;
         }
+
         followingRepository.save(Following.builder()
                 .user(user)
                 .followUser(followingUser)
                 .build());
         return true;
+
     }
-
-
 
 }

@@ -4,7 +4,9 @@ import com.twitter.clone.twitterclone.auth.common.model.entity.User;
 import com.twitter.clone.twitterclone.auth.common.repository.UserRepository;
 import com.twitter.clone.twitterclone.following.model.entity.Following;
 import com.twitter.clone.twitterclone.following.repository.FollowingRepository;
+import com.twitter.clone.twitterclone.global.execption.FollowingExceptionImpl;
 import com.twitter.clone.twitterclone.global.execption.TweetExceptionImpl;
+import com.twitter.clone.twitterclone.global.execption.type.FollowingErrorCode;
 import com.twitter.clone.twitterclone.global.execption.type.TweetErrorCode;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
 import com.twitter.clone.twitterclone.global.util.S3Util;
@@ -50,8 +52,7 @@ public class TweetService {
         List<Following> followinUserList = followingRepository.findAllByFollowUser(userDetails.getUser());
 
         if (followinUserList.size() == 0){
-            //TODO: 팔로워가 없거나 팔로워의 게시글이 없을경우 에러 처리
-            return null;
+            throw new FollowingExceptionImpl(FollowingErrorCode.NO_FOLLOWING);
         }
 
         //누가 팔로워 했는지 그 팔로워가 랜덤으로 가져올수 있게

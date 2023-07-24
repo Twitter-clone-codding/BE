@@ -5,14 +5,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record ReTweetsListResponse(
-//        Long id,
+        Long id,
         TweetUserResponse user,
         String content,
         String hashtag,
         Integer hearts,
         Integer views,
         List<String> imgList,
-        LocalDateTime createdAt
-//        Long mainTweetId
+        LocalDateTime createdAt,
+        Long mainTweetId
 ) {
 }

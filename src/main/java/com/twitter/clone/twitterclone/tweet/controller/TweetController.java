@@ -4,6 +4,7 @@ import com.twitter.clone.twitterclone.global.model.response.CustomResponse;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsDeleteRequest;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsPostRequest;
+import com.twitter.clone.twitterclone.tweet.model.response.TweetListAndTotalPageResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetsListResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetsResponse;
 import com.twitter.clone.twitterclone.tweet.model.type.ResponseMessage;
@@ -36,16 +37,13 @@ public class TweetController {
 
     //이거 제꺼
     @GetMapping("/posts")
-    public CustomResponse<?> getListTweet(
+    public CustomResponse<TweetListAndTotalPageResponse> getListTweet(
             @RequestParam Integer page,
             @RequestParam Integer limit
     ) {
-
-        List<TweetsListResponse> tweet = tweetService.tweetPostList(page, limit);
-
-        return CustomResponse.success(ResponseMessage.TWEET_LIST.getMsg(), tweet); //TODO: 추가해야함.
+        TweetListAndTotalPageResponse tweetListAndTotalPageResponse = tweetService.tweetPostList(page, limit);
+        return CustomResponse.success(ResponseMessage.TWEET_LIST.getMsg(), tweetListAndTotalPageResponse); //TODO: 추가해야함.
     }
-
     //이거 제꺼
     @DeleteMapping("/posts")
     public CustomResponse<?> deleteTweet(

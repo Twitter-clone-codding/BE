@@ -21,6 +21,4 @@ public class CustomResponse<T> {
     public static <T> CustomResponse<T> success(String msg, T result){
         return new CustomResponse<>(msg,result);
     }
-
-
 }

@@ -7,6 +7,7 @@ import com.twitter.clone.twitterclone.global.util.S3Util;
 import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsDeleteRequest;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsPostRequest;
+import com.twitter.clone.twitterclone.tweet.model.response.TweetListAndTotalPageResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetUserResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetsListResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetsResponse;
@@ -53,7 +54,7 @@ public class TweetService {
     }
 
     @Transactional
-    public List<TweetsListResponse> tweetPostList(Integer page, Integer limit) {
+    public TweetListAndTotalPageResponse tweetPostList(Integer page, Integer limit) {
         Sort.Direction direction = Sort.Direction.DESC;
         Sort sort = Sort.by(direction, "modifiedAt");
 
@@ -64,6 +65,7 @@ public class TweetService {
                 .filter(a -> a.getRetweets() == null)
                 .map(a ->
                         new TweetsListResponse(
+                                a.getId(),
                                 new TweetUserResponse(
                                         a.getUser().getUserId(),
                                         a.getUser().getNickname(),
@@ -81,7 +83,7 @@ public class TweetService {
                 )
                 .collect(Collectors.toList());
 
-        return tweetsListResponses;
+        return new TweetListAndTotalPageResponse(tweetsListResponses, tweets.getTotalPages());
 
     }
 
@@ -103,15 +105,19 @@ public class TweetService {
         }
     }
 
-    @Transactional(readOnly = true)
-    public TweetsResponse getDetailTweet(Long mainTweetid) { // 유저 추가는 나중에
+    @Transactional
+    public TweetsResponse getDetailTweet(Long mainTweetId) { // 유저 추가는 나중에
         // 메인 트윗 유무
-        Tweets tweets = tweetsRepository.findById(mainTweetid).orElseThrow(
+        Tweets tweets = tweetsRepository.findById(mainTweetId).orElseThrow(
                 () -> new TweetExceptionImpl(TweetErrorCode.NO_TWEET)
         );
+        //조회수 카운트 증가 중복
+
+        tweets.setViews(tweets.getViews() + 1);
+
         // 하트 카운트 조회후에 넣어야함
         return new TweetsResponse(
-//                tweets.getId(),
+                tweets.getId(),
                 new TweetUserResponse(
                         tweets.getUser().getUserId(),
                         tweets.getUser().getNickname(),

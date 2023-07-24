@@ -93,6 +93,7 @@ public class TweetService {
     }
     @Transactional(readOnly = true)
     public TweetsResponse getDetailTweet(Long mainTweetid) { // 유저 추가는 나중에
+        //TODO : 조회수 추가 할것.
         // 메인 트윗 유무
         Tweets tweets = tweetsRepository.findById(mainTweetid).orElseThrow(
                 () -> new TweetExceptionImpl(TweetErrorCode.NO_TWEET)

@@ -74,7 +74,7 @@ public class WebSecurityConfig {
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/oauth/loing").permitAll()
-                        .requestMatchers("/register").permitAll()
+                        .requestMatchers("/register/**").permitAll()
                         .requestMatchers("/api/tweets/posts/**").permitAll()
                         .requestMatchers("/api/tweets/{MainTweetid}/**").permitAll()
                         .requestMatchers("/api/retweets/{MainTweetid}/**").permitAll()

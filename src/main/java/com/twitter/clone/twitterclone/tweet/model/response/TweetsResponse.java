@@ -5,10 +5,11 @@ import java.util.List;
 
 public record TweetsResponse(
         //유저 정보
+//        Long id,
 //        UserDTO user,
         String content,
         String hashtag,
-//        Integer hearts,
+        Integer hearts,
         Integer views,
         //이미지
         List<String> imgList,

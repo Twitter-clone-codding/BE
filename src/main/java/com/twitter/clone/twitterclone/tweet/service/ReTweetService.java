@@ -34,14 +34,16 @@ public class ReTweetService {
         return retweets.stream()
                 .map(retweet ->
                         new ReTweetsListResponse(
+//                                retweet.getId(),
                                 retweet.getContent(),
                                 retweet.getHashtag(),
-//                                retwwet.getHearts(),
+                                0,
                                 retweet.getViews(),
                                 retweet.getTweetImgList().stream()
                                         .map(fileName -> s3Url + "/" + fileName)
                                         .collect(Collectors.toList()),
                                 retweet.getCreatedAt()
+//                                retweet.getRetweets().getId()
                         )
                 )
                 .collect(Collectors.toList());

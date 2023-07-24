@@ -98,8 +98,10 @@ public class TweetService {
                 () -> new TweetExceptionImpl(TweetErrorCode.NO_TWEET)
         );
         return new TweetsResponse(
+//                tweets.getId(),
                 tweets.getContent()
                 , tweets.getHashtag()
+                ,0
                 , tweets.getViews()
                 , tweets.getTweetImgList().stream()
                     .map(fileName -> s3Url + "/" + fileName)

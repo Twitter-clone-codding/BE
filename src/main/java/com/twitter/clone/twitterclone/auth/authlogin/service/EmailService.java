@@ -56,8 +56,6 @@ public class EmailService {
         if (!(isVerify(request))) {
             throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
         }
-        redisUtil.setString("email : "+request.getEmail(), "", 1, TimeUnit.MILLISECONDS);
-
     }
 
     private boolean isVerify(EmailCodeRequest request) {

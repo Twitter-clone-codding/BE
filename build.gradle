@@ -37,9 +37,6 @@ dependencies {
 	//OAuth2
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
-	// security
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-
 	//Spring
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'

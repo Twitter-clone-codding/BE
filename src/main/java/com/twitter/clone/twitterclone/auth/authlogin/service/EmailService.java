@@ -1,7 +1,7 @@
 package com.twitter.clone.twitterclone.auth.authlogin.service;
 
 import com.twitter.clone.twitterclone.auth.authlogin.model.request.EmailCodeRequest;
-import com.twitter.clone.twitterclone.auth.authlogin.repository.EmailCodeVerifyRepository;
+import com.twitter.clone.twitterclone.global.util.RedisUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -11,14 +11,16 @@ import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class EmailService {
 
     private final JavaMailSender emailSender;
+    private final RedisUtil redisUtil;
+
     private String emailCode;
-    private final EmailCodeVerifyRepository emailCodeVerifyRepository;
 
     public void createEmailCode() {
         String randomStr = "";
@@ -45,21 +47,21 @@ public class EmailService {
         MimeMessage emailForm = createEmail(email);
         emailSender.send(emailForm);
 
-        emailCodeVerifyRepository.createEmailCodeVerify(email, emailCode);
+        redisUtil.setString("email : "+email, emailCode, 30, TimeUnit.MINUTES);
 
         return emailCode;
     }
 
     public void verifyEmailCode(EmailCodeRequest request) {
-        if (isVerify(request)) {
+        if (!(isVerify(request))) {
             throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
         }
-        emailCodeVerifyRepository.removeEmailCodeVerify(request.getEmail());
+        redisUtil.setString("email : "+request.getEmail(), "", 1, TimeUnit.MILLISECONDS);
+
     }
 
     private boolean isVerify(EmailCodeRequest request) {
-        return !(emailCodeVerifyRepository.hasKey(request.getEmail()) &&
-                emailCodeVerifyRepository.getEmailCodeVerify(request.getEmail())
-                        .equals(request.getEmailCode()));
+        return request.getEmail().equals(redisUtil.getString("email : "+request.getEmail()));
     }
+
 }

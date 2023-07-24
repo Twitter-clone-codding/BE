@@ -37,9 +37,6 @@ dependencies {
 	//OAuth2
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
-	// security
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-
 	//Spring
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
@@ -54,9 +51,6 @@ dependencies {
 
 	//AWS 위한 라이브러리
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-
-	//Security
-	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	//Spring mail
 	//https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail

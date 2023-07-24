@@ -10,6 +10,7 @@ import com.twitter.clone.twitterclone.global.execption.type.FollowingErrorCode;
 import com.twitter.clone.twitterclone.global.execption.type.TweetErrorCode;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
 import com.twitter.clone.twitterclone.global.util.S3Util;
+import com.twitter.clone.twitterclone.tweet.model.entity.TweetView;
 import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsDeleteRequest;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsPostRequest;
@@ -18,6 +19,7 @@ import com.twitter.clone.twitterclone.tweet.model.response.TweetUserResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetsListResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetsResponse;
 import com.twitter.clone.twitterclone.tweet.repository.TweetLikeRepository;
+import com.twitter.clone.twitterclone.tweet.repository.TweetViewRepository;
 import com.twitter.clone.twitterclone.tweet.repository.TweetsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,6 +40,7 @@ public class TweetService {
     private final FollowingRepository followingRepository;
     private final TweetsRepository tweetsRepository;
     private final TweetLikeRepository likeRepository;
+    private final TweetViewRepository tweetViewRepository;
     private final S3Util s3Util;
 
     private String s3Url = "https://twitter-image-storegy.s3.ap-northeast-2.amazonaws.com";
@@ -148,6 +151,11 @@ public class TweetService {
         if (!Objects.isNull(img)) {
             imgUrl = s3Util.saveListFile(img);
         }
+        // 컨텐트와 이미지가 모두 널이거나 비어 있는지 확인
+        if (tweet.tweet().content().trim().isEmpty() && (imgUrl.isEmpty())) {
+            throw new TweetExceptionImpl(TweetErrorCode.EMPTY_CONTENT_AND_IMAGE);
+        }
+
         if (!Objects.isNull(tweet.mainTweetId())) { // 메인 트윗 유무
             Tweets mainTweet = tweetsRepository.findById(tweet.mainTweetId()).orElseThrow(
                     () -> new TweetExceptionImpl(TweetErrorCode.NO_TWEET));
@@ -163,9 +171,13 @@ public class TweetService {
         Tweets tweets = tweetsRepository.findById(mainTweetId).orElseThrow(
                 () -> new TweetExceptionImpl(TweetErrorCode.NO_TWEET)
         );
-        //조회수 카운트 증가 중복
 
-        tweets.setViews(tweets.getViews() + 1);
+        TweetView tweetView = tweetViewRepository.findByTweetIdAndUserId(tweets, userDetails.getUser());
+        //조회수 카운트 증가 중복
+        if (tweetView == null) {
+            tweets.setViews(tweets.getViews() + 1);
+            tweetViewRepository.save(new TweetView(tweets, userDetails.getUser()));
+        }
 
         // 하트 카운트 조회후에 넣어야함
         return new TweetsResponse(

@@ -1,4 +1,4 @@
-package com.twitter.clone.twitterclone.global.security;
+package com.twitter.clone.twitterclone.authlogin.security;
 
 
 import com.twitter.clone.twitterclone.global.util.JwtUtil;

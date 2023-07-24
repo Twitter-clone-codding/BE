@@ -1,9 +1,8 @@
-package com.twitter.clone.twitterclone.global.security;
+package com.twitter.clone.twitterclone.authlogin.security;
 
 import com.twitter.clone.twitterclone.authlogin.model.entity.User;
 import com.twitter.clone.twitterclone.authlogin.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

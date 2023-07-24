@@ -1,8 +1,8 @@
 package com.twitter.clone.twitterclone.authlogin.config;
 
-import com.twitter.clone.twitterclone.global.security.JwtAuthenticationFilter;
-import com.twitter.clone.twitterclone.global.security.JwtAuthorizationFilter;
-import com.twitter.clone.twitterclone.global.security.UserDetailsServiceImpl;
+import com.twitter.clone.twitterclone.authlogin.security.JwtAuthenticationFilter;
+import com.twitter.clone.twitterclone.authlogin.security.JwtAuthorizationFilter;
+import com.twitter.clone.twitterclone.authlogin.security.UserDetailsServiceImpl;
 import com.twitter.clone.twitterclone.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;

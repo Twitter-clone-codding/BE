@@ -1,4 +1,4 @@
-package com.twitter.clone.twitterclone.global.security;
+package com.twitter.clone.twitterclone.authlogin.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twitter.clone.twitterclone.authlogin.model.request.LoginRequestDto;
@@ -8,7 +8,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.json.HTTP;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

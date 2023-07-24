@@ -15,7 +15,7 @@ public class UserController {
 
     private final CustomOAuthUserService  customOAuthUserService;
 
-    @PostMapping("/api/login")
+    @PostMapping("/oauth/login")
     public ResponseEntity<OAuth2User> oauthLogin(@RequestBody OAuth2UserRequest userRequest) {
         OAuth2User oauthUser = customOAuthUserService.loadUser(userRequest);
         return ResponseEntity.ok(oauthUser);

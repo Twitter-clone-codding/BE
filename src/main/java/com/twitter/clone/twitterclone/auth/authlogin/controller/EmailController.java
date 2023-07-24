@@ -27,7 +27,7 @@ public class EmailController {
 
     @PostMapping("/verify/email")
     public String verifyEmailCode(@RequestBody EmailCodeRequest request) throws MessagingException, UnsupportedEncodingException {
-//        emailService.verifyEmailCode(request);
+        emailService.verifyEmailCode(request);
         return "인증번호 확인 완료";
     }
 

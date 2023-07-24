@@ -1,5 +1,10 @@
 package com.twitter.clone.twitterclone.auth.common.config;
 
+import com.twitter.clone.twitterclone.auth.common.repository.UserRepository;
+import com.twitter.clone.twitterclone.auth.oauthlogin.handler.OAuthLoginFailureHandler;
+import com.twitter.clone.twitterclone.auth.oauthlogin.handler.OAuthLoginSuccessHandler;
+import com.twitter.clone.twitterclone.auth.oauthlogin.service.CustomOAuthUserService;
+import com.twitter.clone.twitterclone.auth.oauthlogin.service.UserService;
 import com.twitter.clone.twitterclone.global.security.JwtAuthenticationFilter;
 import com.twitter.clone.twitterclone.global.security.JwtAuthorizationFilter;
 import com.twitter.clone.twitterclone.global.security.UserDetailsServiceImpl;
@@ -27,9 +32,9 @@ public class WebSecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
 
-
-
-
+    private final CustomOAuthUserService userService;
+    private final OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
+    private final OAuthLoginFailureHandler oAuthLoginFailureHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {

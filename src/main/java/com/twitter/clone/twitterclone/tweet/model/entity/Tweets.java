@@ -1,5 +1,6 @@
 package com.twitter.clone.twitterclone.tweet.model.entity;
 
+import com.twitter.clone.twitterclone.auth.common.model.entity.User;
 import com.twitter.clone.twitterclone.global.model.entity.Auditing;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsPostRequest;
 import jakarta.persistence.*;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -36,6 +38,10 @@ public class Tweets extends Auditing {
     @JoinColumn(name = "tweetId")
     private Tweets retweets;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    private User user;
+
 
     public Tweets(TweetsPostRequest tweet, List<String> imageUrl) {
         this.content = tweet.tweet().content();
@@ -51,4 +57,6 @@ public class Tweets extends Auditing {
         this.tweetImgList = imageUrl;
         this.retweets = mainTweet;
     }
+
+
 }

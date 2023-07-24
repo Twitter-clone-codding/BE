@@ -2,6 +2,7 @@ package com.twitter.clone.twitterclone.tweet.service;
 
 import com.twitter.clone.twitterclone.global.execption.TweetExceptionImpl;
 import com.twitter.clone.twitterclone.global.execption.type.TweetErrorCode;
+import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
 import com.twitter.clone.twitterclone.global.util.S3Util;
 import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsDeleteRequest;
@@ -14,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,14 +37,15 @@ public class TweetService {
     private String s3Url = "https://twitter-image-storegy.s3.ap-northeast-2.amazonaws.com";
 
     @Transactional
-    public void tweetDelete(TweetsDeleteRequest request) {
+    public void tweetDelete(TweetsDeleteRequest request, UserDetailsImpl userDetails) {
         Tweets tweets = tweetsRepository.findById(request.tweetId())
                 .orElseThrow(); //TODO: 에러 처리 해야 함.
 
+        if (!isEqualUserId(userDetails.getUser().getUserId(), tweets.getUser().getUserId())) {
+            //TODO : 에러처리
+        }
         for (String imgFileName : tweets.getTweetImgList()) {
-
             s3Util.deleteImage(imgFileName);
-
         }
 
         tweetsRepository.delete(tweets);
@@ -91,6 +95,7 @@ public class TweetService {
             tweetsRepository.save(new Tweets(tweet, imgUrl));
         }
     }
+
     @Transactional(readOnly = true)
     public TweetsResponse getDetailTweet(Long mainTweetid) { // 유저 추가는 나중에
         //TODO : 조회수 추가 할것.
@@ -102,12 +107,17 @@ public class TweetService {
 //                tweets.getId(),
                 tweets.getContent()
                 , tweets.getHashtag()
-                ,0
+                , 0
                 , tweets.getViews()
                 , tweets.getTweetImgList().stream()
-                    .map(fileName -> s3Url + "/" + fileName)
-                    .collect(Collectors.toList())
+                .map(fileName -> s3Url + "/" + fileName)
+                .collect(Collectors.toList())
                 , tweets.getCreatedAt()
         );
     }
+
+    private boolean isEqualUserId(Long tokenInUserId, Long writeUserId) {
+        return tokenInUserId == writeUserId;
+    }
+
 }

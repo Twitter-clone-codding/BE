@@ -1,5 +1,6 @@
 package com.twitter.clone.twitterclone.tweet.model.entity;
 
+import com.twitter.clone.twitterclone.auth.common.model.entity.User;
 import com.twitter.clone.twitterclone.global.model.entity.Auditing;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsPostRequest;
 import jakarta.persistence.*;
@@ -19,10 +20,6 @@ public class Tweets extends Auditing {
 
     private String content;
 
-//    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "user_id")
-//    private User userId;
-
     private String hashtag;
 
     private Integer views;
@@ -36,19 +33,29 @@ public class Tweets extends Auditing {
     @JoinColumn(name = "tweetId")
     private Tweets retweets;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    private User user;
 
-    public Tweets(TweetsPostRequest tweet, List<String> imageUrl) {
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "tweetId")
+    private List<TweetLike> likes;
+
+    public Tweets(TweetsPostRequest tweet, List<String> imageUrl, User user) {
         this.content = tweet.tweet().content();
         this.hashtag = tweet.tweet().hashtag();
         this.views = 0;
         this.tweetImgList = imageUrl;
+        this.user = user;
     }
 
-    public Tweets(TweetsPostRequest tweet, List<String> imageUrl, Tweets mainTweet) {
+    public Tweets(TweetsPostRequest tweet, List<String> imageUrl, Tweets mainTweet, User user) {
         this.content = tweet.tweet().content();
         this.hashtag = tweet.tweet().hashtag();
         this.views = 0;
         this.tweetImgList = imageUrl;
         this.retweets = mainTweet;
+        this.user = user;
     }
+
+
 }

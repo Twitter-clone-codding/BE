@@ -22,6 +22,20 @@ repositories {
 }
 
 dependencies {
+	//json
+	implementation 'org.json:json:20230227'
+
+	// validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// JWT
+	compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+
+
+	//OAuth2
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
 	//Spring
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -37,6 +51,14 @@ dependencies {
 
 	//AWS 위한 라이브러리
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+	//Spring mail
+	//https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.1.2'
+
+	//Redis
+	//https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '3.1.2'
 
 }
 

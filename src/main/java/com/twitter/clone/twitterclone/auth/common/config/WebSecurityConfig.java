@@ -83,6 +83,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/oauth/loing").permitAll()
                         .requestMatchers("/register/**").permitAll()
+                        .requestMatchers("/chat").permitAll()
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 

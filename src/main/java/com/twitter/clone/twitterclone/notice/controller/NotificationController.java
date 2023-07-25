@@ -15,7 +15,7 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    @GetMapping("/notifications/stream")
+    @GetMapping(value = "/notifications/stream", produces = "text/event-stream")
     public SseEmitter stream(
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {

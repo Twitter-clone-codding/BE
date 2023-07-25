@@ -14,8 +14,7 @@ public record SearchTweetsResponse(
         Boolean heartCheck,
         Integer views,
         List<String> imgList,
-        LocalDateTime createdAt,
-        Long mainTweetId
+        LocalDateTime createdAt
 ) {
 
 }

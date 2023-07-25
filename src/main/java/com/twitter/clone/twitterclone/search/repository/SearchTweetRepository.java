@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface SearchTweetRepository extends JpaRepository<Tweets, Long> {
     Page<Tweets> findByHashtagContaining(Pageable pageable, String search);
 
-    Page<Tweets> findByContentContaining(org.springframework.data.domain.Pageable pageable, String search);
+    Page<Tweets> findByContentContaining(Pageable pageable, String search);
 }

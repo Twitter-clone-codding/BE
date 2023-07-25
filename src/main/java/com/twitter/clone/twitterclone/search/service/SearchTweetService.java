@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +30,7 @@ public class SearchTweetService {
 
     private String s3Url = "https://twitter-image-storegy.s3.ap-northeast-2.amazonaws.com";
 
+    @Transactional(readOnly = true)
     public SearchTweetListAndTotalPageResponse SearchTweetPostList(Integer page, Integer limit, String search, UserDetailsImpl userDetails) {
 
         if (search == null) {
@@ -55,7 +57,8 @@ public class SearchTweetService {
         if (searchContaining.isEmpty()) {
             return new SearchTweetListAndTotalPageResponse(Collections.emptyList(), 0);
         }
-
+        
+        System.out.println("??? : "+searchContaining.get().toList().get(0).getUser());
         List<SearchTweetsResponse> searchTweetsListResponseList = searchContaining.stream()
                 .map(searchtweet ->
                         new SearchTweetsResponse(
@@ -74,8 +77,7 @@ public class SearchTweetService {
                                 searchtweet.getTweetImgList().stream()
                                         .map(fileName -> s3Url + "/" + fileName)
                                         .collect(Collectors.toList()),
-                                searchtweet.getCreatedAt(),
-                                searchtweet.getRetweets().getId()
+                                searchtweet.getCreatedAt()
                         )
                 )
                 .collect(Collectors.toList());

@@ -1,39 +1,32 @@
 package com.twitter.clone.twitterclone.notice.service;
 
-import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
+import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import static com.twitter.clone.twitterclone.notice.controller.NotificationController.sseEmitters;
 
+@RequiredArgsConstructor
 @Service
 public class NotificationService {
 
-    private final ConcurrentMap<Long, SseEmitter> clients = new ConcurrentHashMap<>();
+//    private final TweetsRepository tweetsRepository;
 
-    public SseEmitter register(UserDetailsImpl userDetails) {
-        SseEmitter emitter = new SseEmitter();
-        Long userId = userDetails.getUser().getUserId();
-        this.clients.put(userId, emitter);
+    public void notifyAddCommentEvent(Tweets tweets) {
+        Long userId = tweets.getRetweets().getId(); // 리트윗 달린 게시글의 작성자 pk값
+        // 댓글에 대한 처리 후 해당 댓글이 달린 게시글의 pk값으로 게시글을 조회
+//        Memo memo = memoRepository.findById(memoId).orElseThrow(
+//                () -> new IllegalArgumentException("찾을 수 없는 메모입니다.")
+//        );
+//        Long userId = memo.getUser().getId();
 
-        emitter.onTimeout(() -> this.clients.remove(userId));
-        emitter.onCompletion(() -> this.clients.remove(userId));
-
-        return emitter;
-    }
-
-    public void notify(Long userId, String message, Object data) {
-        SseEmitter emitter = this.clients.get(userId);
-
-        if (emitter != null) {
+        if (sseEmitters.containsKey(userId)) {
+            SseEmitter sseEmitter = sseEmitters.get(userId);
             try {
-                // 알람 디비 저장
-
-                // 클라이언트에게 데이터를 전송한다.
-                emitter.send(SseEmitter.event().name("notification").data(message));
+                sseEmitter.send(SseEmitter.event().name("addComment").data("앙기모띠"));
             } catch (Exception e) {
-                this.clients.remove(userId);
+                sseEmitters.remove(userId);
             }
         }
     }

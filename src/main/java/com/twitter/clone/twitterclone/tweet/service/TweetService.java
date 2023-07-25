@@ -7,6 +7,7 @@ import com.twitter.clone.twitterclone.global.execption.TweetExceptionImpl;
 import com.twitter.clone.twitterclone.global.execption.type.FollowingErrorCode;
 import com.twitter.clone.twitterclone.global.execption.type.TweetErrorCode;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
+import com.twitter.clone.twitterclone.global.util.RedisUtil;
 import com.twitter.clone.twitterclone.global.util.S3Util;
 import com.twitter.clone.twitterclone.tweet.model.entity.TweetView;
 import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,6 +42,7 @@ public class TweetService {
     private final TweetLikeRepository likeRepository;
     private final TweetViewRepository tweetViewRepository;
     private final S3Util s3Util;
+    private final RedisUtil redisUtil;
 
     private String s3Url = "https://twitter-image-storegy.s3.ap-northeast-2.amazonaws.com";
 
@@ -52,7 +55,7 @@ public class TweetService {
         Pageable pageable = PageRequest.of(page, limit, sort);
         List<Following> followinUserList = followingRepository.findAllByFollowUser(userDetails.getUser());
 
-        if (followinUserList.size() == 0){
+        if (followinUserList.size() == 0) {
             throw new FollowingExceptionImpl(FollowingErrorCode.NO_FOLLOWING);
         }
 
@@ -152,6 +155,23 @@ public class TweetService {
         // 컨텐트와 이미지가 모두 널이거나 비어 있는지 확인
         if (tweet.tweet().content().trim().isEmpty() && (imgUrl.isEmpty())) {
             throw new TweetExceptionImpl(TweetErrorCode.EMPTY_CONTENT_AND_IMAGE);
+        }
+
+        //HashTag 있는지 확인
+        if (!tweet.tweet().hashtag().isEmpty()) {
+            //HashTag 따로 redis 에 저장
+            String[] hashTagList = tweet.tweet().hashtag().split("#");
+            for (String hashTag : hashTagList) {
+                if(hashTag.isBlank() || hashTag.isEmpty()){
+                    continue;
+                }
+                if (Objects.isNull(redisUtil.getString(hashTag))) {
+                    redisUtil.setString("hashTag", hashTag, 1, TimeUnit.DAYS);
+                    continue;
+                }
+                redisUtil.setString("hashTag", redisUtil.getString("hashTag") + "," + hashTag, 1, TimeUnit.DAYS);
+                System.out.println(redisUtil.getString("hashTag"));
+            }
         }
 
         if (!Objects.isNull(tweet.mainTweetId())) { // 메인 트윗 유무

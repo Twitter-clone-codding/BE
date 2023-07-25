@@ -1,5 +1,6 @@
 package com.twitter.clone.twitterclone.chatt;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHeaders;
@@ -10,7 +11,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 
 @Component
+@RequiredArgsConstructor
 public class WebSocketInterceptor implements ChannelInterceptor {
+
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {

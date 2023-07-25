@@ -1,7 +1,5 @@
 package com.twitter.clone.twitterclone.tweet.service;
 
-import com.twitter.clone.twitterclone.auth.common.model.entity.User;
-import com.twitter.clone.twitterclone.auth.common.repository.UserRepository;
 import com.twitter.clone.twitterclone.following.model.entity.Following;
 import com.twitter.clone.twitterclone.following.repository.FollowingRepository;
 import com.twitter.clone.twitterclone.global.execption.FollowingExceptionImpl;
@@ -143,7 +141,7 @@ public class TweetService {
     }
 
     @Transactional
-    public void postTweet(TweetsPostRequest tweet, List<MultipartFile> img, UserDetailsImpl userDetails) {
+    public Tweets postTweet(TweetsPostRequest tweet, List<MultipartFile> img, UserDetailsImpl userDetails) {
         /**
          * 이미지 저장후에 게시글이 저장 실패시 이미지 처리 생각해야함
          */
@@ -159,9 +157,10 @@ public class TweetService {
         if (!Objects.isNull(tweet.mainTweetId())) { // 메인 트윗 유무
             Tweets mainTweet = tweetsRepository.findById(tweet.mainTweetId()).orElseThrow(
                     () -> new TweetExceptionImpl(TweetErrorCode.NO_TWEET));
-            tweetsRepository.save(new Tweets(tweet, imgUrl, mainTweet, userDetails.getUser()));
+
+            return tweetsRepository.save(new Tweets(tweet, imgUrl, mainTweet, userDetails.getUser()));
         } else {
-            tweetsRepository.save(new Tweets(tweet, imgUrl, userDetails.getUser()));
+            return tweetsRepository.save(new Tweets(tweet, imgUrl, userDetails.getUser()));
         }
     }
 

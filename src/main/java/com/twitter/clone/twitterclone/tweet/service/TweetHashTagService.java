@@ -28,12 +28,6 @@ public class TweetHashTagService {
             hashTagCounts.put(tag, hashTagCounts.getOrDefault(tag, 0) + 1);
         }
 
-        //해시태그 등장 횟수 계산
-        for (Map.Entry<String, Integer> entry : hashTagCounts.entrySet()) {
-            String tag = entry.getKey();
-            int count = entry.getValue();
-            System.out.println(tag + ": " + count);
-        }
         // 해시태그 등장 횟수에 따른 정렬
         List<Map.Entry<String, Integer>> sortedEntries = new ArrayList<>(hashTagCounts.entrySet());
         sortedEntries.sort(Map.Entry.<String, Integer>comparingByValue().reversed());

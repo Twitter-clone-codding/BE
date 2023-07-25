@@ -35,25 +35,25 @@ public class TweetController {
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         TweetListAndTotalPageResponse listAndTotalPageResponse = tweetService.followingTweetPostList(page, limit, userDetails);
-        return CustomResponse.success("성공적으로 트윗 조회를 하셨습니다.",listAndTotalPageResponse);
+        return CustomResponse.success("성공적으로 트윗 조회를 하셨습니다.", listAndTotalPageResponse);
     }
 
 
-    @PostMapping(value = "/posts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "text/event-stream")
+    @PostMapping(value = "/posts")
     public CustomResponse<String> postTweet(
             @RequestPart TweetsPostRequest TweetsPostRequest,
             @RequestPart(required = false) List<MultipartFile> img,
             @AuthenticationPrincipal UserDetailsImpl userDetails
 //            @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId
-            ) {
+    ) {
         Tweets tweets = tweetService.postTweet(TweetsPostRequest, img, userDetails);
 
-        if (tweets.getRetweets() != null) {
-            notificationService.notify(
-                    tweets.getRetweets().getUser().getUserId(),
-                    "Your tweet was retweeted by " + userDetails.getUser().getTagName(),
-                    tweets);
-            }
+//        if (tweets.getRetweets() != null) {
+//            notificationService.notify(
+//                    tweets.getRetweets().getUser().getUserId(),
+//                    "Your tweet was retweeted by " + userDetails.getUser().getTagName(),
+//                    tweets);
+//        }
 
         return CustomResponse.success(ResponseMessage.TWEET_POST.getMsg(), null);
     }
@@ -67,12 +67,13 @@ public class TweetController {
         TweetListAndTotalPageResponse tweetListAndTotalPageResponse = tweetService.tweetPostList(page, limit, userDetails);
         return CustomResponse.success(ResponseMessage.TWEET_LIST.getMsg(), tweetListAndTotalPageResponse); //TODO: 추가해야함.
     }
+
     //이거 제꺼
     @DeleteMapping("/posts")
     public CustomResponse<?> deleteTweet(
             @RequestBody TweetsDeleteRequest request,
             @AuthenticationPrincipal UserDetailsImpl userDetails
-            ) {
+    ) {
         tweetService.tweetDelete(request, userDetails);
         return CustomResponse.success(ResponseMessage.TWEET_DELETE.getMsg(), null);
     }
@@ -82,7 +83,7 @@ public class TweetController {
             @PathVariable Long MainTweetid,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        TweetsResponse detailTweet = tweetService.getDetailTweet(MainTweetid,userDetails);
+        TweetsResponse detailTweet = tweetService.getDetailTweet(MainTweetid, userDetails);
         return CustomResponse.success(ResponseMessage.TWEET_DETAIL.getMsg(), detailTweet);
     }
 }

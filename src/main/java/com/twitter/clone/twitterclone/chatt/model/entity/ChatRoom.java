@@ -27,8 +27,8 @@ public class ChatRoom extends Auditing {
     @Column
     private Long UserB;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "chatLog")
-    private List<ChatLog> chatLogList;
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "chatLog")
+//    private List<ChatLog> chatLogList;
 
 
 }

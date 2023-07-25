@@ -26,8 +26,8 @@ public class ChatLog extends Auditing {
     @Column
     private String message;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private ChatLog chatLog;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    private ChatLog chatLog;
 
 
 }

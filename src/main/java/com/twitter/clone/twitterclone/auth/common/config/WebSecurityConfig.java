@@ -83,12 +83,6 @@ public class WebSecurityConfig {
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/oauth/loing").permitAll()
                         .requestMatchers("/register/**").permitAll()
-                        .requestMatchers("/api/tweets/posts/**").permitAll()
-                        .requestMatchers("/api/tweets/{MainTweetid}/**").permitAll()
-                        .requestMatchers("/api/retweets/{MainTweetid}/**").permitAll()
-                        .requestMatchers("/api/search/**").permitAll()
-                        .requestMatchers("/api/posts/**").permitAll()
-                       // .requestMatchers("/").permitAll()  // 메인 페이지 요청 허가
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 

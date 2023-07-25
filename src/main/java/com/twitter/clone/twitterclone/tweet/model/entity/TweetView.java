@@ -12,18 +12,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-public class TweetLike {
+public class TweetView {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long likeId;
+    private Long viewId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tweetId")
     private Tweets tweetId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    private User userId;
 
-    @Column
-    private String email;
-
+    public TweetView(Tweets tweets, User user) {
+        this.tweetId = tweets;
+        this.userId = user;
+    }
 }

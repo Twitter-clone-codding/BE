@@ -4,6 +4,7 @@ import com.twitter.clone.twitterclone.global.model.response.CustomResponse;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsDeleteRequest;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsPostRequest;
+import com.twitter.clone.twitterclone.tweet.model.response.TweetListAndTotalPageResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetsListResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetsResponse;
 import com.twitter.clone.twitterclone.tweet.model.type.ResponseMessage;
@@ -24,6 +25,17 @@ public class TweetController {
 
     private final TweetService tweetService;
 
+    @GetMapping("/following/list")
+    public CustomResponse<?> followingTweetList(
+            @RequestParam Integer page,
+            @RequestParam Integer limit,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        TweetListAndTotalPageResponse listAndTotalPageResponse = tweetService.followingTweetPostList(page, limit, userDetails);
+        return CustomResponse.success("성공적으로 트윗 조회를 하셨습니다.",listAndTotalPageResponse);
+    }
+
+
     @PostMapping(value = "/posts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public CustomResponse<String> postTweet(
             @RequestPart TweetsPostRequest TweetsPostRequest,
@@ -34,18 +46,16 @@ public class TweetController {
         return CustomResponse.success(ResponseMessage.TWEET_POST.getMsg(), null);
     }
 
-    //이거 제꺼
+
     @GetMapping("/posts")
-    public CustomResponse<?> getListTweet(
+    public CustomResponse<TweetListAndTotalPageResponse> getListTweet(
             @RequestParam Integer page,
-            @RequestParam Integer limit
+            @RequestParam Integer limit,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-
-        List<TweetsListResponse> tweet = tweetService.tweetPostList(page, limit);
-
-        return CustomResponse.success(ResponseMessage.TWEET_LIST.getMsg(), tweet); //TODO: 추가해야함.
+        TweetListAndTotalPageResponse tweetListAndTotalPageResponse = tweetService.tweetPostList(page, limit, userDetails);
+        return CustomResponse.success(ResponseMessage.TWEET_LIST.getMsg(), tweetListAndTotalPageResponse); //TODO: 추가해야함.
     }
-
     //이거 제꺼
     @DeleteMapping("/posts")
     public CustomResponse<?> deleteTweet(
@@ -58,9 +68,10 @@ public class TweetController {
 
     @GetMapping("/{MainTweetid}")
     public CustomResponse<TweetsResponse> getDetailTweet(
-            @PathVariable Long MainTweetid
+            @PathVariable Long MainTweetid,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        TweetsResponse detailTweet = tweetService.getDetailTweet(MainTweetid);
+        TweetsResponse detailTweet = tweetService.getDetailTweet(MainTweetid,userDetails);
         return CustomResponse.success(ResponseMessage.TWEET_DETAIL.getMsg(), detailTweet);
     }
 }

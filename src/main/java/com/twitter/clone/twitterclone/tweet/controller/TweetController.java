@@ -48,12 +48,9 @@ public class TweetController {
     ) {
         Tweets tweets = tweetService.postTweet(TweetsPostRequest, img, userDetails);
 
-//        if (tweets.getRetweets() != null) {
-//            notificationService.notify(
-//                    tweets.getRetweets().getUser().getUserId(),
-//                    "Your tweet was retweeted by " + userDetails.getUser().getTagName(),
-//                    tweets);
-//        }
+        if (tweets.getRetweets() != null) {
+            notificationService.notifyAddCommentEvent(tweets);
+        }
 
         return CustomResponse.success(ResponseMessage.TWEET_POST.getMsg(), null);
     }

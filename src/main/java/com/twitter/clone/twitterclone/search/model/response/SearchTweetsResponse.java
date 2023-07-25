@@ -1,9 +1,11 @@
-package com.twitter.clone.twitterclone.tweet.model.response;
+package com.twitter.clone.twitterclone.search.model.response;
+
+import com.twitter.clone.twitterclone.tweet.model.response.TweetUserResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record TweetsResponse(
+public record SearchTweetsResponse(
         Long id,
         TweetUserResponse user,
         String content,

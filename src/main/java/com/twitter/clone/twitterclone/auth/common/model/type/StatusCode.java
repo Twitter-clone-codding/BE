@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 public class StatusCode {
 
     private int statusCode;
-    private String responseMsg;
+    private String msg;
 
     public StatusCode(int statusCode, String responseMsg) {
         this.statusCode = statusCode;
-        this.responseMsg = responseMsg;
+        this.msg = responseMsg;
     }
 
 }

@@ -51,11 +51,12 @@ public class User extends Auditing {
     }
 
     // 일반 회원가입
-    public User(String email, String password, String nickname, String birthday) {
+    public User(String email, String password, String nickname, String birthday, String tagName) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.birthday = birthday;
+        this.tagName = tagName;
     }
 
     public User googleIdUpdate(String googleId) {

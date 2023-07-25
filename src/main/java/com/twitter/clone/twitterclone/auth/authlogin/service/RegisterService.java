@@ -25,31 +25,35 @@ public class RegisterService {
         String nickname = request.getNickname();
         String birthday = request.getBirthday();
 
-        // 회원 중복 확인
-        Optional<User> checkEmail = userRepository.findByEmail(email);
-        if (checkEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
-        }
+        if(request.getSuccessKey().equals(redisUtil.getString("email : "+request.getEmail()))){
 
-        String[] tag = request.getEmail().split("@");
-        String tagName = tag[0];
-        Optional<User> checkTagName = userRepository.findByTagName(tagName);
-        if (checkTagName.isPresent()) {
-            int suffix = 1;
-            while (checkTagName.isPresent()) {
-                tagName = tag[0] + suffix;
-                checkTagName = userRepository.findByTagName(tagName);
-                suffix++;
+            // 회원 중복 확인
+            Optional<User> checkEmail = userRepository.findByEmail(email);
+            if (checkEmail.isPresent()) {
+                throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
             }
+
+            String[] tag = request.getEmail().split("@");
+            String tagName = tag[0];
+            Optional<User> checkTagName = userRepository.findByTagName(tagName);
+            if (checkTagName.isPresent()) {
+                int suffix = 1;
+                while (checkTagName.isPresent()) {
+                    tagName = tag[0] + suffix;
+                    checkTagName = userRepository.findByTagName(tagName);
+                    suffix++;
+                }
+            }
+
+
+            // 사용자 등록
+            User user = new User(email, password, nickname, birthday, tagName);
+            userRepository.save(user);
+            //redis 에 있는 인증코드 삭제.
+            redisUtil.setString("email : "+request.getEmail(), "", 1, TimeUnit.MILLISECONDS);
         }
-
-
-        // 사용자 등록
-        User user = new User(email, password, nickname, birthday, tagName);
-        userRepository.save(user);
-        //redis 에 있는 인증코드 삭제.
-        redisUtil.setString("email : "+request.getEmail(), "", 1, TimeUnit.MILLISECONDS);
 
     }
+    //TODO: 예외처리 인증코드 안맞는다는 에러.
 
 }

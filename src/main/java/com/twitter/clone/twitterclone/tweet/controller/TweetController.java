@@ -2,6 +2,8 @@ package com.twitter.clone.twitterclone.tweet.controller;
 
 import com.twitter.clone.twitterclone.global.model.response.CustomResponse;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
+import com.twitter.clone.twitterclone.notice.service.NotificationService;
+import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsDeleteRequest;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsPostRequest;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetListAndTotalPageResponse;
@@ -24,6 +26,7 @@ import java.util.List;
 public class TweetController {
 
     private final TweetService tweetService;
+    private final NotificationService notificationService;
 
     @GetMapping("/following/list")
     public CustomResponse<?> followingTweetList(
@@ -36,16 +39,24 @@ public class TweetController {
     }
 
 
-    @PostMapping(value = "/posts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/posts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "text/event-stream")
     public CustomResponse<String> postTweet(
             @RequestPart TweetsPostRequest TweetsPostRequest,
             @RequestPart(required = false) List<MultipartFile> img,
             @AuthenticationPrincipal UserDetailsImpl userDetails
+//            @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId
             ) {
-        tweetService.postTweet(TweetsPostRequest, img, userDetails);
+        Tweets tweets = tweetService.postTweet(TweetsPostRequest, img, userDetails);
+
+        if (tweets.getRetweets() != null) {
+            notificationService.notify(
+                    tweets.getRetweets().getUser().getUserId(),
+                    "Your tweet was retweeted by " + userDetails.getUser().getTagName(),
+                    tweets);
+            }
+
         return CustomResponse.success(ResponseMessage.TWEET_POST.getMsg(), null);
     }
-
 
     @GetMapping("/posts")
     public CustomResponse<TweetListAndTotalPageResponse> getListTweet(

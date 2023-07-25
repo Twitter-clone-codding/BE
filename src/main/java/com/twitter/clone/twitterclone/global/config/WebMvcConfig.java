@@ -13,7 +13,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     private static final List<String> ALLOWED_ORIGINS = Arrays.asList(
             "http://localhost:3000",
-            "http://172.20.10.10:3000");
+            "https://project-front-rouge.vercel.app"
+    );
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {

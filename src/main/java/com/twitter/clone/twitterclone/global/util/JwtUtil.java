@@ -79,7 +79,6 @@ public class JwtUtil {
             cookie.setAttribute("SameSite", "None");
 
             // Response 객체에 Cookie 추가
-            res.setHeader("Set-Cookie",cookie.getValue());
             res.addCookie(cookie);
         } catch (UnsupportedEncodingException e) {
             logger.error(e.getMessage());

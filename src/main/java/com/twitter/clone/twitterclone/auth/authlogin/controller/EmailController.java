@@ -24,7 +24,7 @@ public class EmailController {
     @PostMapping("/send/email")
     public CustomResponse<String> sendEmail(@RequestBody EmailRequest request) throws MessagingException, UnsupportedEncodingException {
         String emailCode = emailService.sendEmail(request.getEmail());
-        return CustomResponse.success(ResponseMessage.SENDEMAIL_SUCCESS.getMsg(), emailCode);
+        return CustomResponse.success(ResponseMessage.SENDEMAIL_SUCCESS.getMsg(), null);
     }
 
     @PostMapping("/verify/email")

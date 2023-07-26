@@ -27,7 +27,6 @@ public class GlobalExceptionAdvice {
         return CustomResponse.error(e);
     }
 
-
     @ExceptionHandler(FollowingExceptionImpl.class)
     public ResponseEntity<?> followingErrorHandler(FollowingExceptionImpl e){
         return CustomResponse.error(e);

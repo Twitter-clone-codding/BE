@@ -7,8 +7,8 @@ public record UserTweetsResponse (
         Long id,
         String content,
         String hashtag,
-        Integer hearts,
-        boolean heartsCheck,
+        //Integer hearts,
+        //boolean heartsCheck,
         Integer views,
         //이미지
         List<String> imgList,

@@ -2,6 +2,7 @@ package com.twitter.clone.twitterclone.profile.controller;
 
 import com.twitter.clone.twitterclone.global.model.response.CustomResponse;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
+import com.twitter.clone.twitterclone.profile.model.Response.ProfileDetailUser;
 import com.twitter.clone.twitterclone.profile.service.ProfileService;
 import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,9 @@ public class ProfileController {
     public CustomResponse<?> getProfiles(@PathVariable Long userId){
 
         String msg = "프로필을 조회하셨습니다.";
-        profileService.getProfiles(userId);
-        return CustomResponse.success(msg, profileUser);
+
+        ProfileDetailUser profileDetailUser = profileService.getProfiles(userId);
+        return CustomResponse.success(msg, profileDetailUser);
     }
 
     @PutMapping

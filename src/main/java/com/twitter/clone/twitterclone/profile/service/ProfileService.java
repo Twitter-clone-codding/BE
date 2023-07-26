@@ -29,32 +29,31 @@ public class ProfileService {
                 ()-> new IllegalArgumentException("해당 사용자 존재하지 않습니다.")
         );
 
-        new ProfileDetailUser(
-                user.getNickname(),
-                user.getTagName(),
-                user.getProfileImageUrl(),
-                user.getProfileBackgroundImageUrl(),
-                user.getContent(),
-                user.getUrl(),
-                user.getCreatedAt(),
-                user.getTweetsList().stream()
-                        .map(tweets ->
-                                new UserTweetsResponse(
-                                        tweets.getId(),
-                                        tweets.getContent(),
-                                        tweets.getHashtag(),
 
-                                        tweets.getViews(),
-                                        tweets.getTweetImgList().stream()
-                                                .map(fileName-> s3Url+"/"+fileName)
-                                                .collect(Collectors.toList()),
-                                        tweets.getCreatedAt()
+        return new ProfileDetailUser(
+              user.getNickname(),
+              user.getTagName(),
+              user.getProfileImageUrl(),
+              user.getProfileBackgroundImageUrl(),
+              user.getContent(),
+              user.getUrl(),
+              user.getCreatedAt(),
+              user.getTweetsList().stream()
+                      .map(tweets ->
+                              new UserTweetsResponse(
+                                      tweets.getId(),
+                                      tweets.getContent(),
+                                      tweets.getHashtag(),
 
-                                )
+                                      tweets.getViews(),
+                                      tweets.getTweetImgList().stream()
+                                              .map(fileName -> s3Url + "/" + fileName)
+                                              .collect(Collectors.toList()),
+                                      tweets.getCreatedAt()
 
-                        ).collect(Collectors.toList()));
-        )
+                              )
 
-        return profileResponse;
+                      ).collect(Collectors.toList()));
+
     }
 }

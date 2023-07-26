@@ -22,4 +22,5 @@ public class ChatController {
         template.convertAndSend("/sub/" + message.roomKey(), message);// 따로 처리 url / 메세징
     }
 
+
 }

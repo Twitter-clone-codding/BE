@@ -1,6 +1,7 @@
 package com.twitter.clone.twitterclone.tweet.service;
 
 import com.twitter.clone.twitterclone.global.util.RedisUtil;
+import com.twitter.clone.twitterclone.tweet.model.response.HashTagResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +16,9 @@ public class TweetHashTagService {
 
     private final RedisUtil redisUtil;
 
-    public List<String> getHashTagList(){
+    public List<HashTagResponse> getHashTagList(){
 
-        List<String> rankHashtagList = new ArrayList<>();
+        List<HashTagResponse> rankHashtagList = new ArrayList<>();
 
         String hashTags = redisUtil.getString("hashTag");
 
@@ -34,7 +35,7 @@ public class TweetHashTagService {
 
         for (Map.Entry<String, Integer> entry : sortedEntries) {
             if(entry.getKey().isEmpty() || entry.getKey().isEmpty()) continue;
-            rankHashtagList.add("#"+entry.getKey());
+            rankHashtagList.add(new HashTagResponse("#"+entry.getKey(), entry.getValue()));
         }
 
         return rankHashtagList;

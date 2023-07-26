@@ -28,10 +28,6 @@ public class RegisterService {
         String nickname = request.getNickname();
         String birthday = request.getBirthday();
 
-        if(Objects.isNull(request.getSuccessKey())){
-            throw new RegisterExceptionImpl(RegisterErrorCode.EMPTY_SUCCESS_KEY);
-        }
-
         if(!(request.getSuccessKey().equals(redisUtil.getString("email : "+request.getEmail())))){
             throw new RegisterExceptionImpl(RegisterErrorCode.NO_SUCCESS_KEY);
         }

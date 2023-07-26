@@ -22,5 +22,7 @@ public class RegisterRequest {
     @NotBlank(message = "생일을 입력해주세요.")
     private String birthday;
 
+    @NotBlank(message = "인증코드가 없습니다.")
+    @NotEmpty(message = "인증코드가 없습니다.")
     private String successKey;
 }

@@ -23,5 +23,4 @@ public class TweetHeartController {
         String msg = heartService.checkTweetLike(tweetId, userDetails) ? ResponseMessage.TWEET_LIKE.getMsg() : ResponseMessage.TWEET_LIKE_CANCEL.getMsg();
         return CustomResponse.success(msg, null);
     }
-
 }

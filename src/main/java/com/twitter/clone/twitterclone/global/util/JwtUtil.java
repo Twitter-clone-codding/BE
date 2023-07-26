@@ -72,9 +72,11 @@ public class JwtUtil {
     public void addJwtToCookie(String token, HttpServletResponse res) {
         try {
             token = URLEncoder.encode(token, "utf-8").replaceAll("\\+", "%20"); // Cookie Value 에는 공백이 불가능해서 encoding 진행
-
             Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token); // Name-Value
             cookie.setPath("/");
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true); // SameSite=None 설정을 사용하려면 Secure도 true로 설정해야함.
+            cookie.setAttribute("SameSite", "None");
 
             // Response 객체에 Cookie 추가
             res.addCookie(cookie);

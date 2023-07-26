@@ -15,12 +15,10 @@ public class CustomResponse<T> {
 
     public static ResponseEntity error(CustomException errorCode){
         return ResponseEntity.status(errorCode.getHttpStatus())
-                .body(errorCode.getErrorMsg());
+                .body(new CustomResponse<>(errorCode.getErrorMsg(), null));
     }
 
     public static <T> CustomResponse<T> success(String msg, T result){
         return new CustomResponse<>(msg,result);
     }
-
-
 }

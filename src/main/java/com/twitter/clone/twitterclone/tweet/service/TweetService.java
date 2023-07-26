@@ -1,51 +1,105 @@
 package com.twitter.clone.twitterclone.tweet.service;
 
+import com.twitter.clone.twitterclone.following.model.entity.Following;
+import com.twitter.clone.twitterclone.following.repository.FollowingRepository;
+import com.twitter.clone.twitterclone.global.execption.FollowingExceptionImpl;
 import com.twitter.clone.twitterclone.global.execption.TweetExceptionImpl;
+import com.twitter.clone.twitterclone.global.execption.type.FollowingErrorCode;
 import com.twitter.clone.twitterclone.global.execption.type.TweetErrorCode;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
+import com.twitter.clone.twitterclone.global.util.RedisUtil;
 import com.twitter.clone.twitterclone.global.util.S3Util;
+import com.twitter.clone.twitterclone.tweet.model.entity.TweetView;
 import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsDeleteRequest;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsPostRequest;
+import com.twitter.clone.twitterclone.tweet.model.response.TweetListAndTotalPageResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetUserResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetsListResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetsResponse;
 import com.twitter.clone.twitterclone.tweet.repository.TweetLikeRepository;
+import com.twitter.clone.twitterclone.tweet.repository.TweetViewRepository;
 import com.twitter.clone.twitterclone.tweet.repository.TweetsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TweetService {
 
+    private final FollowingRepository followingRepository;
     private final TweetsRepository tweetsRepository;
     private final TweetLikeRepository likeRepository;
+    private final TweetViewRepository tweetViewRepository;
     private final S3Util s3Util;
+    private final RedisUtil redisUtil;
 
     private String s3Url = "https://twitter-image-storegy.s3.ap-northeast-2.amazonaws.com";
+
+
+    @Transactional
+    public TweetListAndTotalPageResponse followingTweetPostList(Integer page, Integer limit, UserDetailsImpl userDetails) {
+        Sort.Direction direction = Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, "modifiedAt");
+
+        Pageable pageable = PageRequest.of(page, limit, sort);
+        List<Following> followinUserList = followingRepository.findAllByFollowUser(userDetails.getUser());
+
+        if (followinUserList.size() == 0) {
+            throw new FollowingExceptionImpl(FollowingErrorCode.NO_FOLLOWING);
+        }
+
+        //누가 팔로워 했는지 그 팔로워가 랜덤으로 가져올수 있게
+        Random random = new Random();
+        int randomInt = random.nextInt(followinUserList.size());
+        Page<Tweets> tweets = tweetsRepository.findAllByUser(followinUserList.get(randomInt).getUser(), pageable);
+
+        List<TweetsListResponse> tweetsListResponses = tweets.stream()
+                .filter(a -> a.getRetweets() == null)
+                .map(a ->
+                        new TweetsListResponse(
+                                a.getId(),
+                                new TweetUserResponse(
+                                        a.getUser().getUserId(),
+                                        a.getUser().getNickname(),
+                                        a.getUser().getTagName(),
+                                        a.getUser().getProfileImageUrl()
+                                ),
+                                a.getContent(),
+                                a.getHashtag(),
+                                likeRepository.findByTweetId(a).size(), //TODO 좋아요 갯수 추가 기능.
+                                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
+                                a.getViews(),
+                                a.getTweetImgList().stream()
+                                        .map(fileName -> s3Url + "/" + fileName)
+                                        .collect(Collectors.toList())
+                        )
+                )
+                .collect(Collectors.toList());
+
+        return new TweetListAndTotalPageResponse(tweetsListResponses, tweets.getTotalPages());
+
+    }
 
     @Transactional
     public void tweetDelete(TweetsDeleteRequest request, UserDetailsImpl userDetails) {
         Tweets tweets = tweetsRepository.findById(request.tweetId())
-                .orElseThrow(); //TODO: 에러 처리 해야 함.
+                .orElseThrow(() -> {
+                    throw new TweetExceptionImpl(TweetErrorCode.NO_TWEET);
+                });
 
         if (!isEqualUserId(userDetails.getUser().getUserId(), tweets.getUser().getUserId())) {
-            //TODO : 에러처리
+            throw new TweetExceptionImpl(TweetErrorCode.NOT_MY_TWEET);
         }
         for (String imgFileName : tweets.getTweetImgList()) {
             s3Util.deleteImage(imgFileName);
@@ -55,7 +109,7 @@ public class TweetService {
     }
 
     @Transactional
-    public List<TweetsListResponse> tweetPostList(Integer page, Integer limit) {
+    public TweetListAndTotalPageResponse tweetPostList(Integer page, Integer limit, UserDetailsImpl userDetails) {
         Sort.Direction direction = Sort.Direction.DESC;
         Sort sort = Sort.by(direction, "modifiedAt");
 
@@ -66,6 +120,7 @@ public class TweetService {
                 .filter(a -> a.getRetweets() == null)
                 .map(a ->
                         new TweetsListResponse(
+                                a.getId(),
                                 new TweetUserResponse(
                                         a.getUser().getUserId(),
                                         a.getUser().getNickname(),
@@ -75,6 +130,7 @@ public class TweetService {
                                 a.getContent(),
                                 a.getHashtag(),
                                 likeRepository.findByTweetId(a).size(), //TODO 좋아요 갯수 추가 기능.
+                                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
                                 a.getViews(),
                                 a.getTweetImgList().stream()
                                         .map(fileName -> s3Url + "/" + fileName)
@@ -83,12 +139,12 @@ public class TweetService {
                 )
                 .collect(Collectors.toList());
 
-        return tweetsListResponses;
+        return new TweetListAndTotalPageResponse(tweetsListResponses, tweets.getTotalPages());
 
     }
 
     @Transactional
-    public void postTweet(TweetsPostRequest tweet, List<MultipartFile> img, UserDetailsImpl userDetails) {
+    public TweetsResponse postTweet(TweetsPostRequest tweet, List<MultipartFile> img, UserDetailsImpl userDetails) {
         /**
          * 이미지 저장후에 게시글이 저장 실패시 이미지 처리 생각해야함
          */
@@ -96,24 +152,72 @@ public class TweetService {
         if (!Objects.isNull(img)) {
             imgUrl = s3Util.saveListFile(img);
         }
+        // 컨텐트와 이미지가 모두 널이거나 비어 있는지 확인
+        if (tweet.tweet().content().trim().isEmpty() && imgUrl.isEmpty()) {
+            throw new TweetExceptionImpl(TweetErrorCode.EMPTY_CONTENT_AND_IMAGE);
+        }
+
+        //HashTag 있는지 확인
+        if (!tweet.tweet().hashtag().isEmpty()) {
+            //HashTag 따로 redis 에 저장
+            String[] hashTagList = tweet.tweet().hashtag().split("#");
+            for (String hashTag : hashTagList) {
+                if(hashTag.isBlank() || hashTag.isEmpty()){
+                    continue;
+                }
+                if (Objects.isNull(redisUtil.getString(hashTag))) {
+                    redisUtil.setString("hashTag", hashTag, 1, TimeUnit.DAYS);
+                    continue;
+                }
+                redisUtil.setString("hashTag", redisUtil.getString("hashTag") + "," + hashTag, 1, TimeUnit.DAYS);
+                System.out.println(redisUtil.getString("hashTag"));
+            }
+        }
+        Tweets savetweets;
         if (!Objects.isNull(tweet.mainTweetId())) { // 메인 트윗 유무
             Tweets mainTweet = tweetsRepository.findById(tweet.mainTweetId()).orElseThrow(
                     () -> new TweetExceptionImpl(TweetErrorCode.NO_TWEET));
-            tweetsRepository.save(new Tweets(tweet, imgUrl, mainTweet, userDetails.getUser()));
+            savetweets = tweetsRepository.save(new Tweets(tweet, imgUrl, mainTweet, userDetails.getUser()));
         } else {
-            tweetsRepository.save(new Tweets(tweet, imgUrl, userDetails.getUser()));
+            savetweets = tweetsRepository.save(new Tweets(tweet, imgUrl, userDetails.getUser()));
         }
+        return new TweetsResponse(
+                savetweets.getId(),
+                new TweetUserResponse(
+                        savetweets.getUser().getUserId(),
+                        savetweets.getUser().getNickname(),
+                        savetweets.getUser().getTagName(),
+                        savetweets.getUser().getProfileImageUrl()
+                ),
+                savetweets.getContent(),
+                savetweets.getHashtag(),
+                likeRepository.findByTweetId(savetweets).size(), //TODO 좋아요 갯수 추가 기능.
+                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
+                savetweets.getViews(),
+                savetweets.getTweetImgList().stream()
+                        .map(fileName -> s3Url + "/" + fileName)
+                        .collect(Collectors.toList()),
+                savetweets.getCreatedAt()
+        );
     }
 
-    @Transactional(readOnly = true)
-    public TweetsResponse getDetailTweet(Long mainTweetid) { // 유저 추가는 나중에
+    @Transactional
+    public TweetsResponse getDetailTweet(Long mainTweetId, UserDetailsImpl userDetails) { // 유저 추가는 나중에
         // 메인 트윗 유무
-        Tweets tweets = tweetsRepository.findById(mainTweetid).orElseThrow(
+        Tweets tweets = tweetsRepository.findById(mainTweetId).orElseThrow(
                 () -> new TweetExceptionImpl(TweetErrorCode.NO_TWEET)
         );
+
+        TweetView tweetView = tweetViewRepository.findByTweetIdAndUserId(tweets, userDetails.getUser());
+        //조회수 카운트 증가 중복
+        if (tweetView == null) {
+            tweets.setViews(tweets.getViews() + 1);
+            tweetViewRepository.save(new TweetView(tweets, userDetails.getUser()));
+        }
+
         // 하트 카운트 조회후에 넣어야함
         return new TweetsResponse(
-//                tweets.getId(),
+                tweets.getId(),
                 new TweetUserResponse(
                         tweets.getUser().getUserId(),
                         tweets.getUser().getNickname(),
@@ -123,6 +227,7 @@ public class TweetService {
                 tweets.getContent(),
                 tweets.getHashtag(),
                 likeRepository.findByTweetId(tweets).size(), //TODO 좋아요 갯수 추가 기능.
+                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
                 tweets.getViews(),
                 tweets.getTweetImgList().stream()
                         .map(fileName -> s3Url + "/" + fileName)

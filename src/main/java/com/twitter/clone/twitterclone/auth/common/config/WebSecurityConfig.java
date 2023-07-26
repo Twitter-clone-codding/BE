@@ -22,6 +22,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity // Spring Security 지원을 가능하게 함
@@ -53,10 +59,12 @@ public class WebSecurityConfig {
         return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
     }
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // CSRF 설정
         http.csrf((csrf) -> csrf.disable());
+        http.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()));
 
         // 기본 설정인 Session 방식은 사용하지 않고 JWT 방식을 사용하기 위한 설정
         http.sessionManagement((sessionManagement) ->
@@ -75,12 +83,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/oauth/loing").permitAll()
                         .requestMatchers("/register/**").permitAll()
-                        .requestMatchers("/api/tweets/posts/**").permitAll()
-                        .requestMatchers("/api/tweets/{MainTweetid}/**").permitAll()
-                        .requestMatchers("/api/retweets/{MainTweetid}/**").permitAll()
-                        .requestMatchers("/api/search/**").permitAll()
-                        .requestMatchers("/api/posts/**").permitAll()
-                       // .requestMatchers("/").permitAll()  // 메인 페이지 요청 허가
+                        .requestMatchers("/chat").permitAll()
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
@@ -90,6 +93,22 @@ public class WebSecurityConfig {
 
 
         return http.build();
+    }
+
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(List.of("http://localhost:3000", "https://localhost:8080","https://project-front-rouge.vercel.app"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of("*"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
 }

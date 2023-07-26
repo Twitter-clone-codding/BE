@@ -3,6 +3,8 @@ package com.twitter.clone.twitterclone.auth.authlogin.service;
 import com.twitter.clone.twitterclone.auth.common.model.entity.User;
 import com.twitter.clone.twitterclone.auth.authlogin.model.request.RegisterRequest;
 import com.twitter.clone.twitterclone.auth.common.repository.UserRepository;
+import com.twitter.clone.twitterclone.global.execption.RegisterExceptionImpl;
+import com.twitter.clone.twitterclone.global.execption.type.RegisterErrorCode;
 import com.twitter.clone.twitterclone.global.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,13 +28,13 @@ public class RegisterService {
         String birthday = request.getBirthday();
 
         if(!(request.getSuccessKey().equals(redisUtil.getString("email : "+request.getEmail())))){
-            throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
+            throw new RegisterExceptionImpl(RegisterErrorCode.NO_SUCCESS_KEY);
         }
 
         // 회원 중복 확인
         Optional<User> checkEmail = userRepository.findByEmail(email);
         if (checkEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
+            throw new RegisterExceptionImpl(RegisterErrorCode.SAME_EMAIL);
         }
 
         // 태그네임 생성

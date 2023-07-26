@@ -1,6 +1,7 @@
 package com.twitter.clone.twitterclone.global.advice;
 
 import com.twitter.clone.twitterclone.global.execption.FileExceptionImpl;
+import com.twitter.clone.twitterclone.global.execption.RegisterExceptionImpl;
 import com.twitter.clone.twitterclone.global.execption.TweetExceptionImpl;
 import com.twitter.clone.twitterclone.global.model.response.CustomResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,11 @@ public class GlobalExceptionAdvice {
 
     @ExceptionHandler(FileExceptionImpl.class)
     public ResponseEntity<?> fileErrorHandler(FileExceptionImpl e) {
+        return CustomResponse.error(e);
+    }
+
+    @ExceptionHandler(RegisterExceptionImpl.class)
+    public ResponseEntity<?> registerErrorHandler(RegisterExceptionImpl e){
         return CustomResponse.error(e);
     }
 

@@ -44,13 +44,12 @@ public class TweetController {
             @RequestPart TweetsPostRequest TweetsPostRequest,
             @RequestPart(required = false) List<MultipartFile> img,
             @AuthenticationPrincipal UserDetailsImpl userDetails
-//            @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId
     ) {
         Tweets tweets = tweetService.postTweet(TweetsPostRequest, img, userDetails);
 
-        if (tweets.getRetweets() != null) {
-            notificationService.notifyAddCommentEvent(tweets);
-        }
+//        if (tweets.getRetweets() != null) {
+//            notificationService.notifyAddCommentEvent(tweets);
+//        }
 
         return CustomResponse.success(ResponseMessage.TWEET_POST.getMsg(), null);
     }

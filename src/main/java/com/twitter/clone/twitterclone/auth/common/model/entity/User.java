@@ -78,9 +78,4 @@ public class User extends Auditing {
         this.tagName = tagName;
     }
 
-    public User googleIdUpdate(String googleId) {
-        this.googleId = googleId;
-        return this;
-    }
-
 }

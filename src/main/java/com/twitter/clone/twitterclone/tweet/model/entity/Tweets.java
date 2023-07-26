@@ -56,6 +56,7 @@ public class Tweets extends Auditing {
         this.retweets = mainTweet;
         this.user = user;
     }
-
-
+    public void setViews(int views) {
+        this.views = views;
+    }
 }

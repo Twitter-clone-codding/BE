@@ -1,6 +1,10 @@
 package com.twitter.clone.twitterclone.tweet.service;
 
+import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
+import com.twitter.clone.twitterclone.global.util.S3Util;
+import com.twitter.clone.twitterclone.tweet.model.response.TweetListAndTotalPageResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetUserResponse;
+import com.twitter.clone.twitterclone.tweet.repository.TweetLikeRepository;
 import org.springframework.transaction.annotation.Transactional;
 import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
 import com.twitter.clone.twitterclone.tweet.model.response.ReTweetsListResponse;
@@ -12,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,21 +25,22 @@ import java.util.stream.Collectors;
 public class ReTweetService {
 
     private final ReTweetsRepository reTweetsRepository;
+    private final TweetLikeRepository likeRepository;
 
     private String s3Url = "https://twitter-image-storegy.s3.ap-northeast-2.amazonaws.com";
 
     @Transactional(readOnly = true)
-    public List<ReTweetsListResponse> retweetPostList(Integer page, Integer limit, Long tweetId) {
+    public TweetListAndTotalPageResponse retweetPostList(Integer page, Integer limit, Long tweetId, UserDetailsImpl userDetails) {
         Sort.Direction direction = Sort.Direction.DESC;
         Sort sort = Sort.by(direction, "createdAt");
 
         Pageable pageable = PageRequest.of(page, limit, sort);
         Page<Tweets> retweets = reTweetsRepository.findAllByRetweets_Id(tweetId, pageable);
 
-        return retweets.stream()
+        List<ReTweetsListResponse> reTweetsListResponseList = retweets.stream()
                 .map(retweet ->
                         new ReTweetsListResponse(
-//                                retweet.getId(),
+                                retweet.getId(),
                                 new TweetUserResponse(
                                         retweet.getUser().getUserId(),
                                         retweet.getUser().getNickname(),
@@ -43,15 +49,18 @@ public class ReTweetService {
                                 ),
                                 retweet.getContent(),
                                 retweet.getHashtag(),
-                                0,
+                                likeRepository.findByTweetId(retweet).size(), //TODO 좋아요 갯수 추가 기능.
+                                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
                                 retweet.getViews(),
                                 retweet.getTweetImgList().stream()
                                         .map(fileName -> s3Url + "/" + fileName)
                                         .collect(Collectors.toList()),
-                                retweet.getCreatedAt()
-//                                retweet.getRetweets().getId()
+                                retweet.getCreatedAt(),
+                                retweet.getRetweets().getId()
                         )
                 )
                 .collect(Collectors.toList());
+
+        return new TweetListAndTotalPageResponse(reTweetsListResponseList, retweets.getTotalPages());
     }
 }

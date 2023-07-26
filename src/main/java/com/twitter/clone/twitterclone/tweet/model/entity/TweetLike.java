@@ -22,6 +22,7 @@ public class TweetLike {
     @JoinColumn(name = "tweetId")
     private Tweets tweetId;
 
+
     @Column
     private String email;
 

@@ -1,5 +1,6 @@
 package com.twitter.clone.twitterclone.auth.common.model.entity;
 
+import com.twitter.clone.twitterclone.following.model.entity.Following;
 import com.twitter.clone.twitterclone.global.model.entity.Auditing;
 import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
 import jakarta.persistence.*;
@@ -41,11 +42,23 @@ public class User extends Auditing {
     @Column(name = "profileBackgroundImageUrl", length = 100)
     private String profileBackgroundImageUrl;
 
+    @Column(name = "content")
+    private String content;
+
+    @Column(name = "url")
+    private String url;
+
     @Column(name = "googleId", length = 100)
     private String googleId;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Tweets> tweetsList;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "followUser")
+    private List<Following> followUserList;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
+    private Following following;
 
     public User(String name, String email, String encodedPassword, String tagId, String profileImageUrl, String googleId) {
         this.nickname = name;
@@ -69,7 +82,5 @@ public class User extends Auditing {
         this.googleId = googleId;
         return this;
     }
-
-
 
 }

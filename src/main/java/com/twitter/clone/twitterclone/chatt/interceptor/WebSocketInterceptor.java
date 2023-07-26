@@ -1,4 +1,4 @@
-package com.twitter.clone.twitterclone.chatt;
+package com.twitter.clone.twitterclone.chatt.interceptor;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
@@ -9,6 +9,8 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
+
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +25,11 @@ public class WebSocketInterceptor implements ChannelInterceptor {
         MultiValueMap<String, String> map = headers.get(StompHeaderAccessor.NATIVE_HEADERS, MultiValueMap.class);
 
         if (StompCommand.CONNECT == accessor.getCommand()) {
-            System.out.println("접속함.");
+            System.out.println("웹 소켓 접속함.");
+            if(Objects.isNull(map.get("token"))){
+                return null;
+            }
+
         }
         return message;
     }

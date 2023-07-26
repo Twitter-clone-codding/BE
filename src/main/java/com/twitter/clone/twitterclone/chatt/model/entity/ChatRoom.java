@@ -19,13 +19,12 @@ public class ChatRoom extends Auditing {
     private Long id;
 
     @Column
-    private Long UserA;
+    private String roomKey;
 
     @Column
-    private Long UserB;
-
-//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "chatLog")
-//    private List<ChatLog> chatLogList;
+    private Long sender;
+    @Column
+    private Long receiver;
 
 
 }

@@ -36,7 +36,9 @@ public class ProfileService {
 
         if (tagName.equals("myProfile")) {
             log.info(userDetails.getUser().getEmail());
-            user = userDetails.getUser();
+            user = profileRepository.findById(userDetails.getUser().getUserId()).orElseThrow(
+                    () -> new IllegalArgumentException("해당 사용자가 아닙니다.")
+            );
         } else {
             user = profileRepository.findByTagName(tagName).orElseThrow(
                     () -> new IllegalArgumentException("해당 사용자가 아닙니다.")

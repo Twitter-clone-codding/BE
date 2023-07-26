@@ -20,7 +20,10 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @GetMapping("/{tagName}")
-    public CustomResponse<?> getProfiles(@PathVariable String tagName, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public CustomResponse<?> getProfiles(
+            @PathVariable String tagName,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
         log.info(tagName);
 
         ProfileDetailUser profileDetailUser = profileService.getProfiles(tagName, userDetails);

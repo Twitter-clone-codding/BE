@@ -14,7 +14,7 @@ public class NotificationService {
 //    private final TweetsRepository tweetsRepository;
 
     public void notifyAddCommentEvent(Tweets tweets) {
-        Long userId = tweets.getRetweets().getId(); // 리트윗 달린 게시글의 작성자 pk값
+        Long userId = tweets.getUser().getUserId(); // 리트윗 달린 게시글의 작성자 pk값
         // 댓글에 대한 처리 후 해당 댓글이 달린 게시글의 pk값으로 게시글을 조회
 //        Memo memo = memoRepository.findById(memoId).orElseThrow(
 //                () -> new IllegalArgumentException("찾을 수 없는 메모입니다.")

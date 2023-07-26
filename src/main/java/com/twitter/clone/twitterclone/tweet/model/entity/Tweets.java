@@ -1,6 +1,6 @@
 package com.twitter.clone.twitterclone.tweet.model.entity;
 
-import com.twitter.clone.twitterclone.auth.common.model.entity.User;
+import com.twitter.clone.twitterclone.auth.model.entity.User;
 import com.twitter.clone.twitterclone.global.model.entity.Auditing;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsPostRequest;
 import jakarta.persistence.*;

@@ -9,6 +9,7 @@ import com.twitter.clone.twitterclone.global.execption.type.TweetErrorCode;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
 import com.twitter.clone.twitterclone.global.util.RedisUtil;
 import com.twitter.clone.twitterclone.global.util.S3Util;
+import com.twitter.clone.twitterclone.notice.service.NotificationService;
 import com.twitter.clone.twitterclone.tweet.model.entity.TweetView;
 import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsDeleteRequest;
@@ -41,6 +42,7 @@ public class TweetService {
     private final TweetsRepository tweetsRepository;
     private final TweetLikeRepository likeRepository;
     private final TweetViewRepository tweetViewRepository;
+    private final NotificationService notificationService;
     private final S3Util s3Util;
     private final RedisUtil redisUtil;
 
@@ -66,24 +68,33 @@ public class TweetService {
 
         List<TweetsListResponse> tweetsListResponses = tweets.stream()
                 .filter(a -> a.getRetweets() == null)
-                .map(a ->
-                        new TweetsListResponse(
-                                a.getId(),
-                                new TweetUserResponse(
-                                        a.getUser().getUserId(),
-                                        a.getUser().getNickname(),
-                                        a.getUser().getTagName(),
-                                        a.getUser().getProfileImageUrl()
-                                ),
-                                a.getContent(),
-                                a.getHashtag(),
-                                likeRepository.findByTweetId(a).size(), //TODO 좋아요 갯수 추가 기능.
-                                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
-                                a.getViews(),
-                                a.getTweetImgList().stream()
-                                        .map(fileName -> s3Url + "/" + fileName)
-                                        .collect(Collectors.toList())
-                        )
+                .map(a -> {
+                            int likeTotal = likeRepository.findByTweetId(a).size();
+
+                            if (Objects.isNull(likeTotal)) {
+                                likeTotal = 0;
+                            }
+
+                            return new TweetsListResponse(
+                                    a.getId(),
+                                    new TweetUserResponse(
+                                            a.getUser().getUserId(),
+                                            a.getUser().getNickname(),
+                                            a.getUser().getTagName(),
+                                            a.getUser().getProfileImageUrl()
+                                    ),
+                                    a.getContent(),
+                                    a.getHashtag(),
+                                    likeTotal,
+                                    !(likeRepository.findByTweetIdAndEmail(a, userDetails.getUser().getEmail()).isEmpty()),
+                                    a.getViews(),
+                                    a.getTweetImgList().stream()
+                                            .map(fileName -> s3Url + "/" + fileName)
+                                            .collect(Collectors.toList()),
+                                    a.getCreatedAt()
+                            );
+                        }
+
                 )
                 .collect(Collectors.toList());
 
@@ -116,27 +127,36 @@ public class TweetService {
         Pageable pageable = PageRequest.of(page, limit, sort);
         Page<Tweets> tweets = tweetsRepository.findAll(pageable);
 
+
         List<TweetsListResponse> tweetsListResponses = tweets.stream()
                 .filter(a -> a.getRetweets() == null)
-                .map(a ->
-                        new TweetsListResponse(
-                                a.getId(),
-                                new TweetUserResponse(
-                                        a.getUser().getUserId(),
-                                        a.getUser().getNickname(),
-                                        a.getUser().getTagName(),
-                                        a.getUser().getProfileImageUrl()
-                                ),
-                                a.getContent(),
-                                a.getHashtag(),
-                                likeRepository.findByTweetId(a).size(), //TODO 좋아요 갯수 추가 기능.
-                                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
-                                a.getViews(),
-                                a.getTweetImgList().stream()
-                                        .map(fileName -> s3Url + "/" + fileName)
-                                        .collect(Collectors.toList())
-                        )
-                )
+                .map(a -> {
+                    int likeTotal = likeRepository.findByTweetId(a).size();
+
+                    if (Objects.isNull(likeTotal)) {
+                        likeTotal = 0;
+                    }
+
+                    return new TweetsListResponse(
+                            a.getId(),
+                            new TweetUserResponse(
+                                    a.getUser().getUserId(),
+                                    a.getUser().getNickname(),
+                                    a.getUser().getTagName(),
+                                    a.getUser().getProfileImageUrl()
+                            ),
+                            a.getContent(),
+                            a.getHashtag(),
+                            likeTotal,
+                            !(likeRepository.findByTweetIdAndEmail(a, userDetails.getUser().getEmail()).isEmpty()),
+                            a.getViews(),
+                            a.getTweetImgList().stream()
+                                    .map(fileName -> s3Url + "/" + fileName)
+                                    .collect(Collectors.toList()),
+                            a.getCreatedAt()
+
+                    );
+                })
                 .collect(Collectors.toList());
 
         return new TweetListAndTotalPageResponse(tweetsListResponses, tweets.getTotalPages());
@@ -177,6 +197,9 @@ public class TweetService {
         if (!Objects.isNull(tweet.mainTweetId())) { // 메인 트윗 유무
             Tweets mainTweet = tweetsRepository.findById(tweet.mainTweetId()).orElseThrow(
                     () -> new TweetExceptionImpl(TweetErrorCode.NO_TWEET));
+
+            notificationService.notifyAddCommentEvent(mainTweet);
+
             savetweets = tweetsRepository.save(new Tweets(tweet, imgUrl, mainTweet, userDetails.getUser()));
         } else {
             savetweets = tweetsRepository.save(new Tweets(tweet, imgUrl, userDetails.getUser()));
@@ -191,8 +214,8 @@ public class TweetService {
                 ),
                 savetweets.getContent(),
                 savetweets.getHashtag(),
-                likeRepository.findByTweetId(savetweets).size(), //TODO 좋아요 갯수 추가 기능.
-                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
+                0,
+                false,
                 savetweets.getViews(),
                 savetweets.getTweetImgList().stream()
                         .map(fileName -> s3Url + "/" + fileName)
@@ -209,12 +232,18 @@ public class TweetService {
         );
 
         TweetView tweetView = tweetViewRepository.findByTweetIdAndUserId(tweets, userDetails.getUser());
+
         //조회수 카운트 증가 중복
         if (tweetView == null) {
             tweets.setViews(tweets.getViews() + 1);
             tweetViewRepository.save(new TweetView(tweets, userDetails.getUser()));
         }
 
+        int likeTotal = likeRepository.findByTweetId(tweets).size();
+
+        if (Objects.isNull(likeTotal)) {
+            likeTotal = 0;
+        }
         // 하트 카운트 조회후에 넣어야함
         return new TweetsResponse(
                 tweets.getId(),
@@ -226,8 +255,8 @@ public class TweetService {
                 ),
                 tweets.getContent(),
                 tweets.getHashtag(),
-                likeRepository.findByTweetId(tweets).size(), //TODO 좋아요 갯수 추가 기능.
-                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
+                likeTotal,
+                !(likeRepository.findByTweetIdAndEmail(tweets, userDetails.getUser().getEmail()).isEmpty()),
                 tweets.getViews(),
                 tweets.getTweetImgList().stream()
                         .map(fileName -> s3Url + "/" + fileName)

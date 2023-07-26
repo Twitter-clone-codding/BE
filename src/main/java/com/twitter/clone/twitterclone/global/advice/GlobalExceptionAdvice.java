@@ -1,9 +1,6 @@
 package com.twitter.clone.twitterclone.global.advice;
 
-import com.twitter.clone.twitterclone.global.execption.FileExceptionImpl;
-import com.twitter.clone.twitterclone.global.execption.FollowingExceptionImpl;
-import com.twitter.clone.twitterclone.global.execption.RegisterExceptionImpl;
-import com.twitter.clone.twitterclone.global.execption.TweetExceptionImpl;
+import com.twitter.clone.twitterclone.global.execption.*;
 import com.twitter.clone.twitterclone.global.model.response.CustomResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,9 +32,14 @@ public class GlobalExceptionAdvice {
 
     @ExceptionHandler(RegisterExceptionImpl.class)
     public ResponseEntity<?> registerErrorHandler(RegisterExceptionImpl e) {
-
         return CustomResponse.error(e);
     }
+
+    @ExceptionHandler(ChatExceptionImpl.class)
+    public ResponseEntity<?> chatErrorHandler(ChatExceptionImpl e){
+        return CustomResponse.error(e);
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> vaildationErrorHandler(MethodArgumentNotValidException e) {

@@ -1,5 +1,6 @@
 package com.twitter.clone.twitterclone.tweet.service;
 
+import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
 import com.twitter.clone.twitterclone.global.util.S3Util;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetListAndTotalPageResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetUserResponse;
@@ -29,7 +30,7 @@ public class ReTweetService {
     private String s3Url = "https://twitter-image-storegy.s3.ap-northeast-2.amazonaws.com";
 
     @Transactional(readOnly = true)
-    public TweetListAndTotalPageResponse retweetPostList(Integer page, Integer limit, Long tweetId) {
+    public TweetListAndTotalPageResponse retweetPostList(Integer page, Integer limit, Long tweetId, UserDetailsImpl userDetails) {
         Sort.Direction direction = Sort.Direction.DESC;
         Sort sort = Sort.by(direction, "createdAt");
 
@@ -48,7 +49,8 @@ public class ReTweetService {
                                 ),
                                 retweet.getContent(),
                                 retweet.getHashtag(),
-                                likeRepository.findByTweetId(retweet).size(), //TODO 좋아요 갯수 추가 기능.,
+                                likeRepository.findByTweetId(retweet).size(), //TODO 좋아요 갯수 추가 기능.
+                                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
                                 retweet.getViews(),
                                 retweet.getTweetImgList().stream()
                                         .map(fileName -> s3Url + "/" + fileName)

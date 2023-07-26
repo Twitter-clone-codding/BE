@@ -10,6 +10,7 @@ public record ReTweetsListResponse(
         String content,
         String hashtag,
         Integer hearts,
+        Boolean heartCheck,
         Integer views,
         List<String> imgList,
         LocalDateTime createdAt,

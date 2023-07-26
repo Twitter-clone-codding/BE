@@ -57,7 +57,7 @@ public class NotificationService {
     public TweetListAndTotalPageResponse getNotice(User user, Integer page, Integer limit) {
 
         Sort.Direction direction = Sort.Direction.DESC;
-        Sort sort = Sort.by(direction, "modifiedAt");
+        Sort sort = Sort.by(direction, "createdAt");
 
         Pageable pageable = PageRequest.of(page, limit, sort);
         Page<Notification> allByUserId = notificationRepository.findByUser(user, pageable);

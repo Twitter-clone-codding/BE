@@ -1,6 +1,7 @@
 package com.twitter.clone.twitterclone.notification.model.entity;
 
 import com.twitter.clone.twitterclone.auth.model.entity.User;
+import com.twitter.clone.twitterclone.global.model.entity.Auditing;
 import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import static jakarta.persistence.FetchType.*;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Notification {
+public class Notification extends Auditing {
 
     @Id
     @GeneratedValue(generator = "tweetId", strategy = GenerationType.IDENTITY)

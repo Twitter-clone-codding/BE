@@ -3,6 +3,7 @@ package com.twitter.clone.twitterclone.chatt.service;
 import com.twitter.clone.twitterclone.auth.model.entity.User;
 import com.twitter.clone.twitterclone.auth.repository.UserRepository;
 import com.twitter.clone.twitterclone.chatt.model.entity.ChatRoom;
+import com.twitter.clone.twitterclone.chatt.model.response.ChatRoomResponse;
 import com.twitter.clone.twitterclone.chatt.repository.ChatRoomRepository;
 import com.twitter.clone.twitterclone.global.execption.ChatExceptionImpl;
 import com.twitter.clone.twitterclone.global.execption.type.ChatErrorCode;
@@ -40,13 +41,13 @@ public class ChatRoomService {
                 .build());
     }
 
-    public List<TweetUserResponse> searchProfileList(User user) {
+    public List<ChatRoomResponse> searchProfileList(User user) {
         userRepository.findById(user.getUserId())
                 .orElseThrow(() -> {
                     throw new ChatExceptionImpl(ChatErrorCode.NO_RECEIVER_USER);
                 });
 
-        List<TweetUserResponse> tweetUserResponses = new ArrayList<>();
+        List<ChatRoomResponse> tweetUserResponses = new ArrayList<>();
 
         List<ChatRoom> senderChatRoomList = chatRoomRepository.findAllBySender(user.getUserId());
 
@@ -55,7 +56,7 @@ public class ChatRoomService {
                     .orElseThrow(() -> {
                         throw new ChatExceptionImpl(ChatErrorCode.NO_RECEIVER_USER);
                     });
-            tweetUserResponses.add(new TweetUserResponse(receiver.getUserId(), receiver.getNickname(), receiver.getTagName(), receiver.getProfileImageUrl()));
+            tweetUserResponses.add(new ChatRoomResponse(receiver.getUserId(), receiver.getNickname(), receiver.getTagName(), receiver.getProfileImageUrl(),chatRoom.getRoomKey()));
         }
 
         List<ChatRoom> receiverChatRoomList = chatRoomRepository.findAllByReceiver(user.getUserId());
@@ -65,7 +66,7 @@ public class ChatRoomService {
                     .orElseThrow(() -> {
                         throw new ChatExceptionImpl(ChatErrorCode.NO_RECEIVER_USER);
                     });
-            tweetUserResponses.add(new TweetUserResponse(receiver.getUserId(), receiver.getNickname(), receiver.getTagName(), receiver.getProfileImageUrl()));
+            tweetUserResponses.add(new ChatRoomResponse(receiver.getUserId(), receiver.getNickname(), receiver.getTagName(), receiver.getProfileImageUrl(),chatRoom.getRoomKey()));
         }
 
         return tweetUserResponses;

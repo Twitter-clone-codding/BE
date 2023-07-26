@@ -15,7 +15,7 @@ public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
 
-    @PostMapping
+    @GetMapping
     public CustomResponse<?> createChatRoom(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam Long receiver
@@ -24,7 +24,7 @@ public class ChatRoomController {
         return CustomResponse.success("성공적으로 채팅방을 만드셨습니다.", null);
     }
 
-    @GetMapping
+    @PostMapping
     public CustomResponse<?> getChatRoomList(
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {

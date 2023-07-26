@@ -7,5 +7,6 @@ public record TweetUserResponse(
         Long id,
         String nickname,
         String tagName,
-        String profileImageUrl) {
+        String profileImageUrl
+) {
 }

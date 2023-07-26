@@ -9,6 +9,7 @@ import com.twitter.clone.twitterclone.global.execption.type.TweetErrorCode;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
 import com.twitter.clone.twitterclone.global.util.RedisUtil;
 import com.twitter.clone.twitterclone.global.util.S3Util;
+import com.twitter.clone.twitterclone.notice.service.NotificationService;
 import com.twitter.clone.twitterclone.tweet.model.entity.TweetView;
 import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsDeleteRequest;
@@ -41,6 +42,7 @@ public class TweetService {
     private final TweetsRepository tweetsRepository;
     private final TweetLikeRepository likeRepository;
     private final TweetViewRepository tweetViewRepository;
+    private final NotificationService notificationService;
     private final S3Util s3Util;
     private final RedisUtil redisUtil;
 
@@ -195,6 +197,9 @@ public class TweetService {
         if (!Objects.isNull(tweet.mainTweetId())) { // 메인 트윗 유무
             Tweets mainTweet = tweetsRepository.findById(tweet.mainTweetId()).orElseThrow(
                     () -> new TweetExceptionImpl(TweetErrorCode.NO_TWEET));
+
+            notificationService.notifyAddCommentEvent(mainTweet);
+
             savetweets = tweetsRepository.save(new Tweets(tweet, imgUrl, mainTweet, userDetails.getUser()));
         } else {
             savetweets = tweetsRepository.save(new Tweets(tweet, imgUrl, userDetails.getUser()));

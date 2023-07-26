@@ -1,4 +1,4 @@
-package com.twitter.clone.twitterclone.auth.common.model.type;
+package com.twitter.clone.twitterclone.auth.model.type;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

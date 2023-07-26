@@ -1,14 +1,13 @@
 package com.twitter.clone.twitterclone.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.twitter.clone.twitterclone.auth.authlogin.model.request.LoginRequestDto;
-import com.twitter.clone.twitterclone.auth.common.model.type.ResponseMessage;
+import com.twitter.clone.twitterclone.auth.model.request.LoginRequestDto;
+import com.twitter.clone.twitterclone.auth.model.type.ResponseMessage;
 import com.twitter.clone.twitterclone.global.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

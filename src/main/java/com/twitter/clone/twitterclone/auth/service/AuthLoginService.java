@@ -1,4 +1,4 @@
-package com.twitter.clone.twitterclone.auth.authlogin.service;
+package com.twitter.clone.twitterclone.auth.service;
 
 import org.springframework.stereotype.Service;
 

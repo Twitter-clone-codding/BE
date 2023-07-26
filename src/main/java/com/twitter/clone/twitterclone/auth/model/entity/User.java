@@ -1,4 +1,4 @@
-package com.twitter.clone.twitterclone.auth.common.model.entity;
+package com.twitter.clone.twitterclone.auth.model.entity;
 
 import com.twitter.clone.twitterclone.following.model.entity.Following;
 import com.twitter.clone.twitterclone.global.model.entity.Auditing;

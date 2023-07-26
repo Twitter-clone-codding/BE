@@ -1,9 +1,9 @@
-package com.twitter.clone.twitterclone.auth.authlogin.controller;
+package com.twitter.clone.twitterclone.auth.controller;
 
-import com.twitter.clone.twitterclone.auth.authlogin.model.request.EmailCodeRequest;
-import com.twitter.clone.twitterclone.auth.authlogin.model.request.EmailRequest;
-import com.twitter.clone.twitterclone.auth.authlogin.service.EmailService;
-import com.twitter.clone.twitterclone.auth.common.model.type.ResponseMessage;
+import com.twitter.clone.twitterclone.auth.model.request.EmailCodeRequest;
+import com.twitter.clone.twitterclone.auth.model.request.EmailRequest;
+import com.twitter.clone.twitterclone.auth.service.EmailService;
+import com.twitter.clone.twitterclone.auth.model.type.ResponseMessage;
 import com.twitter.clone.twitterclone.global.model.response.CustomResponse;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;

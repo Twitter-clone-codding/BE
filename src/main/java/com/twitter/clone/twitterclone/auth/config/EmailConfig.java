@@ -1,4 +1,4 @@
-package com.twitter.clone.twitterclone.auth.common.config;
+package com.twitter.clone.twitterclone.auth.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

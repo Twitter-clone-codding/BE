@@ -1,4 +1,4 @@
-package com.twitter.clone.twitterclone.auth.authlogin.model.request;
+package com.twitter.clone.twitterclone.auth.model.request;
 
 import jakarta.validation.constraints.*;
 import lombok.Getter;

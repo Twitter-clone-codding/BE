@@ -1,8 +1,8 @@
-package com.twitter.clone.twitterclone.auth.authlogin.controller;
+package com.twitter.clone.twitterclone.auth.controller;
 
-import com.twitter.clone.twitterclone.auth.authlogin.model.request.RegisterRequest;
-import com.twitter.clone.twitterclone.auth.authlogin.service.RegisterService;
-import com.twitter.clone.twitterclone.auth.common.model.type.ResponseMessage;
+import com.twitter.clone.twitterclone.auth.model.request.RegisterRequest;
+import com.twitter.clone.twitterclone.auth.service.RegisterService;
+import com.twitter.clone.twitterclone.auth.model.type.ResponseMessage;
 import com.twitter.clone.twitterclone.global.model.response.CustomResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

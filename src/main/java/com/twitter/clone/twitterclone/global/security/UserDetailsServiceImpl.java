@@ -1,7 +1,7 @@
 package com.twitter.clone.twitterclone.global.security;
 
-import com.twitter.clone.twitterclone.auth.common.model.entity.User;
-import com.twitter.clone.twitterclone.auth.common.repository.UserRepository;
+import com.twitter.clone.twitterclone.auth.model.entity.User;
+import com.twitter.clone.twitterclone.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

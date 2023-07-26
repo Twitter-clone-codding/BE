@@ -1,6 +1,5 @@
 package com.twitter.clone.twitterclone.tweet.model.entity;
 
-import com.twitter.clone.twitterclone.auth.common.model.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

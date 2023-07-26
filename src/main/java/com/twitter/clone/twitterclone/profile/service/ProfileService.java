@@ -1,13 +1,12 @@
 package com.twitter.clone.twitterclone.profile.service;
 
-import com.twitter.clone.twitterclone.auth.common.model.entity.User;
+import com.twitter.clone.twitterclone.auth.model.entity.User;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
 import com.twitter.clone.twitterclone.global.util.S3Util;
 import com.twitter.clone.twitterclone.profile.model.Response.ProfileDetailUser;
 import com.twitter.clone.twitterclone.profile.model.Response.UserTweetsResponse;
 import com.twitter.clone.twitterclone.profile.repository.ProfileRepository;
 import com.twitter.clone.twitterclone.tweet.repository.TweetLikeRepository;
-import com.twitter.clone.twitterclone.tweet.repository.TweetViewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

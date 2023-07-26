@@ -1,6 +1,6 @@
-package com.twitter.clone.twitterclone.auth.authlogin.service;
+package com.twitter.clone.twitterclone.auth.service;
 
-import com.twitter.clone.twitterclone.auth.authlogin.model.request.EmailCodeRequest;
+import com.twitter.clone.twitterclone.auth.model.request.EmailCodeRequest;
 import com.twitter.clone.twitterclone.global.util.RedisUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;

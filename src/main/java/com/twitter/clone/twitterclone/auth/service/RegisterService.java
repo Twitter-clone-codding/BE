@@ -1,8 +1,8 @@
-package com.twitter.clone.twitterclone.auth.authlogin.service;
+package com.twitter.clone.twitterclone.auth.service;
 
-import com.twitter.clone.twitterclone.auth.common.model.entity.User;
-import com.twitter.clone.twitterclone.auth.authlogin.model.request.RegisterRequest;
-import com.twitter.clone.twitterclone.auth.common.repository.UserRepository;
+import com.twitter.clone.twitterclone.auth.model.entity.User;
+import com.twitter.clone.twitterclone.auth.model.request.RegisterRequest;
+import com.twitter.clone.twitterclone.auth.repository.UserRepository;
 import com.twitter.clone.twitterclone.global.execption.RegisterExceptionImpl;
 import com.twitter.clone.twitterclone.global.execption.type.RegisterErrorCode;
 import com.twitter.clone.twitterclone.global.util.RedisUtil;

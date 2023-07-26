@@ -116,27 +116,34 @@ public class TweetService {
         Pageable pageable = PageRequest.of(page, limit, sort);
         Page<Tweets> tweets = tweetsRepository.findAll(pageable);
 
+
         List<TweetsListResponse> tweetsListResponses = tweets.stream()
                 .filter(a -> a.getRetweets() == null)
-                .map(a ->
-                        new TweetsListResponse(
-                                a.getId(),
-                                new TweetUserResponse(
-                                        a.getUser().getUserId(),
-                                        a.getUser().getNickname(),
-                                        a.getUser().getTagName(),
-                                        a.getUser().getProfileImageUrl()
-                                ),
-                                a.getContent(),
-                                a.getHashtag(),
-                                likeRepository.findByTweetId(a).size(), //TODO 좋아요 갯수 추가 기능.
-                                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
-                                a.getViews(),
-                                a.getTweetImgList().stream()
-                                        .map(fileName -> s3Url + "/" + fileName)
-                                        .collect(Collectors.toList())
-                        )
-                )
+                .map(a -> {
+                    int likeTotal = likeRepository.findByTweetId(a).size();
+
+                    if (Objects.isNull(likeTotal)) {
+                        likeTotal = 0;
+                    }
+
+                    return new TweetsListResponse(
+                            a.getId(),
+                            new TweetUserResponse(
+                                    a.getUser().getUserId(),
+                                    a.getUser().getNickname(),
+                                    a.getUser().getTagName(),
+                                    a.getUser().getProfileImageUrl()
+                            ),
+                            a.getContent(),
+                            a.getHashtag(),
+                            likeTotal,
+                            !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
+                            a.getViews(),
+                            a.getTweetImgList().stream()
+                                    .map(fileName -> s3Url + "/" + fileName)
+                                    .collect(Collectors.toList())
+                    );
+                })
                 .collect(Collectors.toList());
 
         return new TweetListAndTotalPageResponse(tweetsListResponses, tweets.getTotalPages());

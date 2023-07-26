@@ -6,12 +6,12 @@ import com.twitter.clone.twitterclone.global.util.S3Util;
 import com.twitter.clone.twitterclone.profile.model.Response.ProfileDetailUser;
 import com.twitter.clone.twitterclone.profile.model.Response.UserTweetsResponse;
 import com.twitter.clone.twitterclone.profile.repository.ProfileRepository;
+import com.twitter.clone.twitterclone.tweet.repository.TweetLikeRepository;
+import com.twitter.clone.twitterclone.tweet.repository.TweetViewRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,11 +19,13 @@ import java.util.stream.Collectors;
 public class ProfileService {
 
     private final ProfileRepository profileRepository;
+    private final TweetLikeRepository likeRepository;
+
     private final S3Util s3Util;
 
     private String s3Url = "https://twitter-image-storegy.s3.ap-northeast-2.amazonaws.com";
     @Transactional(readOnly = true)
-    public ProfileDetailUser getProfiles(Long userId) {
+    public ProfileDetailUser getProfiles(Long userId, UserDetailsImpl userDetails) {
 
         User user = profileRepository.findById(userId).orElseThrow(
                 ()-> new IllegalArgumentException("해당 사용자 존재하지 않습니다.")
@@ -44,7 +46,8 @@ public class ProfileService {
                                       tweets.getId(),
                                       tweets.getContent(),
                                       tweets.getHashtag(),
-
+                                      likeRepository.findByTweetId(tweets).size(),
+                                      !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
                                       tweets.getViews(),
                                       tweets.getTweetImgList().stream()
                                               .map(fileName -> s3Url + "/" + fileName)

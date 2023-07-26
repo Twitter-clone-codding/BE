@@ -19,11 +19,11 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @GetMapping("/{userId}")
-    public CustomResponse<?> getProfiles(@PathVariable Long userId){
+    public CustomResponse<?> getProfiles(@PathVariable Long userId ,@AuthenticationPrincipal UserDetailsImpl userDetails){
 
         String msg = "프로필을 조회하셨습니다.";
 
-        ProfileDetailUser profileDetailUser = profileService.getProfiles(userId);
+        ProfileDetailUser profileDetailUser = profileService.getProfiles(userId,userDetails);
         return CustomResponse.success(msg, profileDetailUser);
     }
 

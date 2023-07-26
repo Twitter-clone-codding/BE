@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -55,12 +56,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String result = jwtUtil.createToken(email);
         jwtUtil.addJwtToCookie(result, response);
 
+        response.setStatus(HttpServletResponse.SC_OK);
         writeJsonResponse(request , response, result, ResponseMessage.LOGIN_SUCCESS.getMsg());
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         log.info("로그인 실패");
+        response.setStatus(401);
         writeJsonResponse(request , response, null, ResponseMessage.LOGIN_FAIL.getMsg());
 
     }
@@ -69,7 +72,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public void writeJsonResponse(HttpServletRequest request, HttpServletResponse response, String result, String msg ) throws IOException {
 
         // HTTP 응답을 설정하는 코드
-        response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 

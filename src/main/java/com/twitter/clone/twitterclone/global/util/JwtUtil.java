@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -96,7 +97,7 @@ public class JwtUtil {
 
     //JWT 검증
     // 토큰 검증
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token, HttpServletResponse res) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
@@ -109,6 +110,15 @@ public class JwtUtil {
         } catch (IllegalArgumentException e) {
             logger.error("JWT claims is empty, 잘못된 JWT 토큰 입니다.");
         }
+
+        try {
+            res.setStatus(401);
+            res.getWriter().write("잘못된 JWT 토큰입니다.");
+            res.getWriter().flush();
+        }catch (Exception e){
+            logger.error("잘못된 JWT 토큰입니다.");
+        }
+
         return false;
     }
 

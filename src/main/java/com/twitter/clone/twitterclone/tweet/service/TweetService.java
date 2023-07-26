@@ -162,14 +162,14 @@ public class TweetService {
             //HashTag 따로 redis 에 저장
             String[] hashTagList = tweet.tweet().hashtag().split("#");
             for (String hashTag : hashTagList) {
-                if(hashTag.isBlank() || hashTag.isEmpty()){
+                if (hashTag.isBlank() || hashTag.isEmpty()) {
                     continue;
                 }
                 if (Objects.isNull(redisUtil.getString(hashTag))) {
-                    redisUtil.setString("hashTag", hashTag, 1, TimeUnit.DAYS);
+                    redisUtil.setString("hashTag", hashTag);
                     continue;
                 }
-                redisUtil.setString("hashTag", redisUtil.getString("hashTag") + "," + hashTag, 1, TimeUnit.DAYS);
+                redisUtil.setString("hashTag", redisUtil.getString("hashTag") + "," + hashTag);
                 System.out.println(redisUtil.getString("hashTag"));
             }
         }

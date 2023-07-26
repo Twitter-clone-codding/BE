@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class EmailCodeRequest {
     private String email;
-    private String emailCode;
+    private String successKey;
 }

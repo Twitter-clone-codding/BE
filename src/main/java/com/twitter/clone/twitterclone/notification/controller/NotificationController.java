@@ -53,9 +53,11 @@ public class NotificationController {
 
     @GetMapping("/api/notice")
     public CustomResponse<?>  getNotice(
-            @AuthenticationPrincipal UserDetailsImpl userDetails
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam Integer page,
+            @RequestParam Integer limit
     ){
-        List<TweetsListResponse> notice = notificationService.getNotice(userDetails.getUser());
+        List<TweetsListResponse> notice = notificationService.getNotice(userDetails.getUser(), page, limit);
         return CustomResponse.success("알림 조회", notice);
     }
 }

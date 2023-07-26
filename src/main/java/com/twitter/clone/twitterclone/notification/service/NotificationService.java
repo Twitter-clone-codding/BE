@@ -1,14 +1,21 @@
 package com.twitter.clone.twitterclone.notification.service;
 
 import com.twitter.clone.twitterclone.auth.model.entity.User;
+import com.twitter.clone.twitterclone.global.execption.FollowingExceptionImpl;
+import com.twitter.clone.twitterclone.global.execption.type.FollowingErrorCode;
 import com.twitter.clone.twitterclone.notification.model.entity.Notification;
 import com.twitter.clone.twitterclone.notification.repository.NotificationRepository;
 import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
+import com.twitter.clone.twitterclone.tweet.model.response.TweetListAndTotalPageResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetUserResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetsListResponse;
 import com.twitter.clone.twitterclone.tweet.repository.TweetLikeRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -47,8 +54,14 @@ public class NotificationService {
     }
 
     @Transactional
-    public List<TweetsListResponse> getNotice(User user) {
-        List<Notification> allByUserId = notificationRepository.findByUser(user);
+    public List<TweetsListResponse> getNotice(User user, Integer page, Integer limit) {
+
+        Sort.Direction direction = Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, "modifiedAt");
+
+        Pageable pageable = PageRequest.of(page, limit, sort);
+        Page<Notification> allByUserId = notificationRepository.findByUser(user, pageable);
+
         List<TweetsListResponse> tweetsListResponses = allByUserId.stream()
                 .map(a -> {
                     int likeTotal = likeRepository.findByTweetId(a.getTweets()).size();
@@ -73,10 +86,10 @@ public class NotificationService {
                                     .map(fileName -> s3Url + "/" + fileName)
                                     .collect(Collectors.toList()),
                             a.getTweets().getCreatedAt()
-                    )
-;                })
+                    );
+                })
                 .collect(Collectors.toList());
 
-        return tweetsListResponses;
+        return new TweetListAndTotalPageResponse(tweetsListResponses, allByUserId.getTotalPages());;
     }
 }

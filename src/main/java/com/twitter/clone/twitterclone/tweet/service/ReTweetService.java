@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,27 +39,35 @@ public class ReTweetService {
         Page<Tweets> retweets = reTweetsRepository.findAllByRetweets_Id(tweetId, pageable);
 
         List<ReTweetsListResponse> reTweetsListResponseList = retweets.stream()
-                .map(retweet ->
-                        new ReTweetsListResponse(
-                                retweet.getId(),
-                                new TweetUserResponse(
-                                        retweet.getUser().getUserId(),
-                                        retweet.getUser().getNickname(),
-                                        retweet.getUser().getTagName(),
-                                        retweet.getUser().getProfileImageUrl()
-                                ),
-                                retweet.getContent(),
-                                retweet.getHashtag(),
-                                likeRepository.findByTweetId(retweet).size(), //TODO 좋아요 갯수 추가 기능.
-                                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
-                                retweet.getViews(),
-                                retweet.getTweetImgList().stream()
-                                        .map(fileName -> s3Url + "/" + fileName)
-                                        .collect(Collectors.toList()),
-                                retweet.getCreatedAt(),
-                                retweet.getRetweets().getId()
-                        )
+                .map(retweet -> {
+                            int likeTotal = likeRepository.findByTweetId(retweet).size();
+
+                            if (Objects.isNull(likeTotal)) {
+                                likeTotal = 0;
+                            }
+
+                            return new ReTweetsListResponse(
+                                    retweet.getId(),
+                                    new TweetUserResponse(
+                                            retweet.getUser().getUserId(),
+                                            retweet.getUser().getNickname(),
+                                            retweet.getUser().getTagName(),
+                                            retweet.getUser().getProfileImageUrl()
+                                    ),
+                                    retweet.getContent(),
+                                    retweet.getHashtag(),
+                                    likeTotal,
+                                    !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
+                                    retweet.getViews(),
+                                    retweet.getTweetImgList().stream()
+                                            .map(fileName -> s3Url + "/" + fileName)
+                                            .collect(Collectors.toList()),
+                                    retweet.getCreatedAt(),
+                                    retweet.getRetweets().getId()
+                            );
+                        }
                 )
+
                 .collect(Collectors.toList());
 
         return new TweetListAndTotalPageResponse(reTweetsListResponseList, retweets.getTotalPages());

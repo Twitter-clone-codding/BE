@@ -66,24 +66,32 @@ public class TweetService {
 
         List<TweetsListResponse> tweetsListResponses = tweets.stream()
                 .filter(a -> a.getRetweets() == null)
-                .map(a ->
-                        new TweetsListResponse(
-                                a.getId(),
-                                new TweetUserResponse(
-                                        a.getUser().getUserId(),
-                                        a.getUser().getNickname(),
-                                        a.getUser().getTagName(),
-                                        a.getUser().getProfileImageUrl()
-                                ),
-                                a.getContent(),
-                                a.getHashtag(),
-                                likeRepository.findByTweetId(a).size(), //TODO 좋아요 갯수 추가 기능.
-                                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
-                                a.getViews(),
-                                a.getTweetImgList().stream()
-                                        .map(fileName -> s3Url + "/" + fileName)
-                                        .collect(Collectors.toList())
-                        )
+                .map(a -> {
+                            int likeTotal = likeRepository.findByTweetId(a).size();
+
+                            if (Objects.isNull(likeTotal)) {
+                                likeTotal = 0;
+                            }
+
+                            return new TweetsListResponse(
+                                    a.getId(),
+                                    new TweetUserResponse(
+                                            a.getUser().getUserId(),
+                                            a.getUser().getNickname(),
+                                            a.getUser().getTagName(),
+                                            a.getUser().getProfileImageUrl()
+                                    ),
+                                    a.getContent(),
+                                    a.getHashtag(),
+                                    likeTotal,
+                                    !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
+                                    a.getViews(),
+                                    a.getTweetImgList().stream()
+                                            .map(fileName -> s3Url + "/" + fileName)
+                                            .collect(Collectors.toList())
+                            );
+                        }
+
                 )
                 .collect(Collectors.toList());
 
@@ -198,8 +206,8 @@ public class TweetService {
                 ),
                 savetweets.getContent(),
                 savetweets.getHashtag(),
-                likeRepository.findByTweetId(savetweets).size(), //TODO 좋아요 갯수 추가 기능.
-                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
+                0,
+                false,
                 savetweets.getViews(),
                 savetweets.getTweetImgList().stream()
                         .map(fileName -> s3Url + "/" + fileName)
@@ -216,12 +224,18 @@ public class TweetService {
         );
 
         TweetView tweetView = tweetViewRepository.findByTweetIdAndUserId(tweets, userDetails.getUser());
+
         //조회수 카운트 증가 중복
         if (tweetView == null) {
             tweets.setViews(tweets.getViews() + 1);
             tweetViewRepository.save(new TweetView(tweets, userDetails.getUser()));
         }
 
+        int likeTotal = likeRepository.findByTweetId(tweetView.getTweetId()).size();
+
+        if (Objects.isNull(likeTotal)) {
+            likeTotal = 0;
+        }
         // 하트 카운트 조회후에 넣어야함
         return new TweetsResponse(
                 tweets.getId(),
@@ -233,7 +247,7 @@ public class TweetService {
                 ),
                 tweets.getContent(),
                 tweets.getHashtag(),
-                likeRepository.findByTweetId(tweets).size(), //TODO 좋아요 갯수 추가 기능.
+                likeTotal,
                 !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
                 tweets.getViews(),
                 tweets.getTweetImgList().stream()

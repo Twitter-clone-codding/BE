@@ -54,7 +54,7 @@ public class NotificationService {
     }
 
     @Transactional
-    public List<TweetsListResponse> getNotice(User user, Integer page, Integer limit) {
+    public TweetListAndTotalPageResponse getNotice(User user, Integer page, Integer limit) {
 
         Sort.Direction direction = Sort.Direction.DESC;
         Sort sort = Sort.by(direction, "modifiedAt");
@@ -90,6 +90,6 @@ public class NotificationService {
                 })
                 .collect(Collectors.toList());
 
-        return new TweetListAndTotalPageResponse(tweetsListResponses, allByUserId.getTotalPages());;
+        return new TweetListAndTotalPageResponse(tweetsListResponses, allByUserId.getTotalPages());
     }
 }

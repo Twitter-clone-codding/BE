@@ -3,6 +3,7 @@ package com.twitter.clone.twitterclone.notification.controller;
 import com.twitter.clone.twitterclone.global.model.response.CustomResponse;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
 import com.twitter.clone.twitterclone.notification.service.NotificationService;
+import com.twitter.clone.twitterclone.tweet.model.response.TweetListAndTotalPageResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetsListResponse;
 import com.twitter.clone.twitterclone.tweet.model.type.ResponseMessage;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +58,7 @@ public class NotificationController {
             @RequestParam Integer page,
             @RequestParam Integer limit
     ){
-        List<TweetsListResponse> notice = notificationService.getNotice(userDetails.getUser(), page, limit);
+        TweetListAndTotalPageResponse notice = notificationService.getNotice(userDetails.getUser(), page, limit);
         return CustomResponse.success("알림 조회", notice);
     }
 }

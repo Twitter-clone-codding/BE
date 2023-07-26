@@ -41,6 +41,12 @@ public class User extends Auditing {
     @Column(name = "profileBackgroundImageUrl", length = 100)
     private String profileBackgroundImageUrl;
 
+    @Column(name = "content")
+    private String content;
+
+    @Column(name = "url")
+    private String url;
+
     @Column(name = "googleId", length = 100)
     private String googleId;
 

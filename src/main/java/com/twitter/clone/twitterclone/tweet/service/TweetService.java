@@ -86,7 +86,7 @@ public class TweetService {
                                     a.getContent(),
                                     a.getHashtag(),
                                     likeTotal,
-                                    Objects.isNull(likeRepository.findByTweetIdAndEmail(a, userDetails.getUser().getEmail())),
+                                    !(likeRepository.findByTweetIdAndEmail(a, userDetails.getUser().getEmail()).isEmpty()),
                                     a.getViews(),
                                     a.getTweetImgList().stream()
                                             .map(fileName -> s3Url + "/" + fileName)
@@ -148,7 +148,7 @@ public class TweetService {
                             a.getContent(),
                             a.getHashtag(),
                             likeTotal,
-                            Objects.isNull(likeRepository.findByTweetIdAndEmail(a, userDetails.getUser().getEmail())),
+                            !(likeRepository.findByTweetIdAndEmail(a, userDetails.getUser().getEmail()).isEmpty()),
                             a.getViews(),
                             a.getTweetImgList().stream()
                                     .map(fileName -> s3Url + "/" + fileName)
@@ -239,7 +239,7 @@ public class TweetService {
             tweetViewRepository.save(new TweetView(tweets, userDetails.getUser()));
         }
 
-        int likeTotal = likeRepository.findByTweetId(tweetView.getTweetId()).size();
+        int likeTotal = likeRepository.findByTweetId(tweets).size();
 
         if (Objects.isNull(likeTotal)) {
             likeTotal = 0;
@@ -256,7 +256,7 @@ public class TweetService {
                 tweets.getContent(),
                 tweets.getHashtag(),
                 likeTotal,
-                Objects.isNull(likeRepository.findByTweetIdAndEmail(tweets, userDetails.getUser().getEmail())),
+                !(likeRepository.findByTweetIdAndEmail(tweets, userDetails.getUser().getEmail()).isEmpty()),
                 tweets.getViews(),
                 tweets.getTweetImgList().stream()
                         .map(fileName -> s3Url + "/" + fileName)

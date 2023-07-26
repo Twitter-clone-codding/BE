@@ -40,18 +40,18 @@ public class TweetController {
 
 
     @PostMapping(value = "/posts")
-    public CustomResponse<String> postTweet(
-            @RequestPart TweetsPostRequest TweetsPostRequest,
+    public CustomResponse<TweetsResponse> postTweet(
+            @ModelAttribute TweetsPostRequest TweetsPostRequest,
             @RequestPart(required = false) List<MultipartFile> img,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        Tweets tweets = tweetService.postTweet(TweetsPostRequest, img, userDetails);
+        TweetsResponse tweets = tweetService.postTweet(TweetsPostRequest, img, userDetails);
 
 //        if (tweets.getRetweets() != null) {
 //            notificationService.notifyAddCommentEvent(tweets);
 //        }
 
-        return CustomResponse.success(ResponseMessage.TWEET_POST.getMsg(), null);
+        return CustomResponse.success(ResponseMessage.TWEET_POST.getMsg(), tweets);
     }
 
     @GetMapping("/posts")

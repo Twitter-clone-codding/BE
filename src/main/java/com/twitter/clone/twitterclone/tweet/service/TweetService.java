@@ -144,7 +144,7 @@ public class TweetService {
     }
 
     @Transactional
-    public Tweets postTweet(TweetsPostRequest tweet, List<MultipartFile> img, UserDetailsImpl userDetails) {
+    public TweetsResponse postTweet(TweetsPostRequest tweet, List<MultipartFile> img, UserDetailsImpl userDetails) {
         /**
          * 이미지 저장후에 게시글이 저장 실패시 이미지 처리 생각해야함
          */
@@ -173,15 +173,32 @@ public class TweetService {
                 System.out.println(redisUtil.getString("hashTag"));
             }
         }
-
+        Tweets savetweets;
         if (!Objects.isNull(tweet.mainTweetId())) { // 메인 트윗 유무
             Tweets mainTweet = tweetsRepository.findById(tweet.mainTweetId()).orElseThrow(
                     () -> new TweetExceptionImpl(TweetErrorCode.NO_TWEET));
-
-            return tweetsRepository.save(new Tweets(tweet, imgUrl, mainTweet, userDetails.getUser()));
+            savetweets = tweetsRepository.save(new Tweets(tweet, imgUrl, mainTweet, userDetails.getUser()));
         } else {
-            return tweetsRepository.save(new Tweets(tweet, imgUrl, userDetails.getUser()));
+            savetweets = tweetsRepository.save(new Tweets(tweet, imgUrl, userDetails.getUser()));
         }
+        return new TweetsResponse(
+                savetweets.getId(),
+                new TweetUserResponse(
+                        savetweets.getUser().getUserId(),
+                        savetweets.getUser().getNickname(),
+                        savetweets.getUser().getTagName(),
+                        savetweets.getUser().getProfileImageUrl()
+                ),
+                savetweets.getContent(),
+                savetweets.getHashtag(),
+                likeRepository.findByTweetId(savetweets).size(), //TODO 좋아요 갯수 추가 기능.
+                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
+                savetweets.getViews(),
+                savetweets.getTweetImgList().stream()
+                        .map(fileName -> s3Url + "/" + fileName)
+                        .collect(Collectors.toList()),
+                savetweets.getCreatedAt()
+        );
     }
 
     @Transactional

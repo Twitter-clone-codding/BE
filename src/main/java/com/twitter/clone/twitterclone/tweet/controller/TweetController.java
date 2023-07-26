@@ -41,7 +41,7 @@ public class TweetController {
 
     @PostMapping(value = "/posts")
     public CustomResponse<TweetsResponse> postTweet(
-            @ModelAttribute TweetsPostRequest TweetsPostRequest,
+            @RequestPart TweetsPostRequest TweetsPostRequest,
             @RequestPart(required = false) List<MultipartFile> img,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {

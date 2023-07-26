@@ -153,7 +153,7 @@ public class TweetService {
             imgUrl = s3Util.saveListFile(img);
         }
         // 컨텐트와 이미지가 모두 널이거나 비어 있는지 확인
-        if (tweet.tweet().content().trim().isEmpty() && (imgUrl.isEmpty())) {
+        if (tweet.tweet().content().trim().isEmpty() && imgUrl.isEmpty()) {
             throw new TweetExceptionImpl(TweetErrorCode.EMPTY_CONTENT_AND_IMAGE);
         }
 

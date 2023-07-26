@@ -1,9 +1,11 @@
 package com.twitter.clone.twitterclone.profile.model.request;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public record ProfileUpdateRequest(
-        String profileImageUrl,
+        MultipartFile profileImageUrl,
         String nickname,
-        String profileBackgroundUrl,
+        MultipartFile profileBackgroundUrl,
         String url,
         String content
 ) {

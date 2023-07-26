@@ -77,6 +77,7 @@ public class User extends Auditing {
         this.birthday = birthday;
         this.tagName = tagName;
     }
+  
 
     public User googleIdUpdate(String googleId) {
         this.googleId = googleId;

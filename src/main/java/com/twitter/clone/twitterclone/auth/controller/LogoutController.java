@@ -24,7 +24,6 @@ public class LogoutController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        System.out.println("?! 들어왔냐?");
         logoutService.logout(request, response);
         return CustomResponse.success(ResponseMessage.LOGOUT.getMsg(), null);
     }

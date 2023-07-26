@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +27,10 @@ public class RegisterService {
         String password = passwordEncoder.encode(request.getPassword());
         String nickname = request.getNickname();
         String birthday = request.getBirthday();
+
+        if(Objects.isNull(request.getSuccessKey())){
+            throw new RegisterExceptionImpl(RegisterErrorCode.EMPTY_SUCCESS_KEY);
+        }
 
         if(!(request.getSuccessKey().equals(redisUtil.getString("email : "+request.getEmail())))){
             throw new RegisterExceptionImpl(RegisterErrorCode.NO_SUCCESS_KEY);

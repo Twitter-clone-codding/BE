@@ -1,6 +1,8 @@
 package com.twitter.clone.twitterclone.profile.service;
 
 import com.twitter.clone.twitterclone.auth.model.entity.User;
+import com.twitter.clone.twitterclone.global.execption.FileExceptionImpl;
+import com.twitter.clone.twitterclone.global.execption.type.FileErrorCode;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
 import com.twitter.clone.twitterclone.global.util.S3Util;
 import com.twitter.clone.twitterclone.profile.model.request.ProfileUpdateRequest;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,6 +29,7 @@ public class ProfileService {
     private final TweetLikeRepository likeRepository;
 
     private final S3Util s3Util;
+    private static final Set<String> EXTENSIONS = Set.of(".jpeg", ".jpg", ".png");
 
     private String s3Url = "https://twitter-image-storegy.s3.ap-northeast-2.amazonaws.com";
 
@@ -99,15 +103,25 @@ public class ProfileService {
             user.setNickname(nickname);
 
             MultipartFile profileImg = profileUpdateRequest.profileImageUrl();
+
+            int dotIndex = profileImg.getOriginalFilename().lastIndexOf('.');
+            String extension = profileImg.getOriginalFilename().substring(dotIndex);
+
             if (profileImg != null) {
-                String profileImageUrl = s3Util.saveFile(profileImg, "profileImg");
-                user.setProfileImageUrl(profileImageUrl);
+                String fileName = System.nanoTime() + getFileExtension(extension);
+                s3Util.saveFile(profileImg, fileName);
+                user.setProfileImageUrl(fileName);
             }
 
             MultipartFile profileBackgroundImage = profileUpdateRequest.profileBackgroundUrl();
+
+            int dotIndex1 = profileImg.getOriginalFilename().lastIndexOf('.');
+            String extension1 = profileImg.getOriginalFilename().substring(dotIndex1);
+
             if (profileBackgroundImage != null) {
-                String profileBackgroundImg = s3Util.saveFile(profileBackgroundImage, "profileBackgroundImage");
-                user.setProfileBackgroundImageUrl(profileBackgroundImg);
+                String fileName = System.nanoTime() + getFileExtension(extension1);
+                s3Util.saveFile(profileImg, fileName);
+                user.setProfileBackgroundImageUrl(fileName);
             }
 
             String url = profileUpdateRequest.url();
@@ -120,7 +134,14 @@ public class ProfileService {
                 user.setContent(content);
             }
 
-            profileRepository.save(user);
         }
     }
+
+    private String getFileExtension(String extension) {
+        if (EXTENSIONS.contains(extension)) {
+            return extension;
+        }
+        throw new FileExceptionImpl(FileErrorCode.NO_IMAGEFILE);
+    }
+
 }

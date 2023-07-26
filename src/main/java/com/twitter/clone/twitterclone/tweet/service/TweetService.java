@@ -88,7 +88,8 @@ public class TweetService {
                                     a.getViews(),
                                     a.getTweetImgList().stream()
                                             .map(fileName -> s3Url + "/" + fileName)
-                                            .collect(Collectors.toList())
+                                            .collect(Collectors.toList()),
+                                    a.getCreatedAt()
                             );
                         }
 
@@ -149,7 +150,9 @@ public class TweetService {
                             a.getViews(),
                             a.getTweetImgList().stream()
                                     .map(fileName -> s3Url + "/" + fileName)
-                                    .collect(Collectors.toList())
+                                    .collect(Collectors.toList()),
+                            a.getCreatedAt()
+
                     );
                 })
                 .collect(Collectors.toList());

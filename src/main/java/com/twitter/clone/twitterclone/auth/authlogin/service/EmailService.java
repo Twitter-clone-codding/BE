@@ -59,7 +59,7 @@ public class EmailService {
     }
 
     private boolean isVerify(EmailCodeRequest request) {
-        return request.getEmail().equals(redisUtil.getString("email : "+request.getEmail()));
+        return request.getSuccessKey().equals(redisUtil.getString("email : "+request.getEmail()));
     }
 
 }

@@ -6,7 +6,9 @@ import com.twitter.clone.twitterclone.global.execption.RegisterExceptionImpl;
 import com.twitter.clone.twitterclone.global.execption.TweetExceptionImpl;
 import com.twitter.clone.twitterclone.global.model.response.CustomResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -36,5 +38,11 @@ public class GlobalExceptionAdvice {
 
         return CustomResponse.error(e);
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> vaildationErrorHandler(MethodArgumentNotValidException e){
+        return CustomResponse.vaildationError(e.getMessage());
+    }
+
 
 }

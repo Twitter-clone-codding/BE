@@ -1,6 +1,6 @@
 package com.twitter.clone.twitterclone.profile.service;
 
-import com.twitter.clone.twitterclone.auth.common.model.entity.User;
+import com.twitter.clone.twitterclone.auth.model.entity.User;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
 import com.twitter.clone.twitterclone.global.util.S3Util;
 import com.twitter.clone.twitterclone.profile.model.request.ProfileUpdateRequest;

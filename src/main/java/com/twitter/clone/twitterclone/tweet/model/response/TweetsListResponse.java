@@ -1,5 +1,6 @@
 package com.twitter.clone.twitterclone.tweet.model.response;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record TweetsListResponse(
@@ -10,6 +11,7 @@ public record TweetsListResponse(
         Integer hearts,
         Boolean heartCheck,
         Integer views,
-        List<String> imgList
+        List<String> imgList,
+        LocalDateTime createdAt
 ) {
 }

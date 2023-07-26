@@ -1,6 +1,5 @@
 package com.twitter.clone.twitterclone.tweet.model.entity;
 
-import com.twitter.clone.twitterclone.auth.common.model.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +20,6 @@ public class TweetLike {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tweetId")
     private Tweets tweetId;
-
 
     @Column
     private String email;

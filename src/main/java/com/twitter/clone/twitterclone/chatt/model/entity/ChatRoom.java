@@ -1,14 +1,11 @@
 package com.twitter.clone.twitterclone.chatt.model.entity;
 
-import com.twitter.clone.twitterclone.auth.common.model.entity.User;
 import com.twitter.clone.twitterclone.global.model.entity.Auditing;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -22,13 +19,12 @@ public class ChatRoom extends Auditing {
     private Long id;
 
     @Column
-    private Long UserA;
+    private String roomKey;
 
     @Column
-    private Long UserB;
-
-//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "chatLog")
-//    private List<ChatLog> chatLogList;
+    private Long sender;
+    @Column
+    private Long receiver;
 
 
 }

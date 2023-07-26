@@ -1,6 +1,6 @@
 package com.twitter.clone.twitterclone.global.security;
 
-import com.twitter.clone.twitterclone.auth.common.model.entity.User;
+import com.twitter.clone.twitterclone.auth.model.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

@@ -82,4 +82,5 @@ public class TweetController {
         TweetsResponse detailTweet = tweetService.getDetailTweet(MainTweetid, userDetails);
         return CustomResponse.success(ResponseMessage.TWEET_DETAIL.getMsg(), detailTweet);
     }
+
 }

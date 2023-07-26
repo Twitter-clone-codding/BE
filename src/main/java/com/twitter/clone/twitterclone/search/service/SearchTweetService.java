@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,28 +58,34 @@ public class SearchTweetService {
         if (searchContaining.isEmpty()) {
             return new SearchTweetListAndTotalPageResponse(Collections.emptyList(), 0);
         }
-        
-        System.out.println("??? : "+searchContaining.get().toList().get(0).getUser());
+
+        System.out.println("??? : " + searchContaining.get().toList().get(0).getUser());
         List<SearchTweetsResponse> searchTweetsListResponseList = searchContaining.stream()
-                .map(searchtweet ->
-                        new SearchTweetsResponse(
-                                searchtweet.getId(),
-                                new TweetUserResponse(
-                                        searchtweet.getUser().getUserId(),
-                                        searchtweet.getUser().getNickname(),
-                                        searchtweet.getUser().getTagName(),
-                                        searchtweet.getUser().getProfileImageUrl()
-                                ),
-                                searchtweet.getContent(),
-                                searchtweet.getHashtag(),
-                                likeRepository.findByTweetId(searchtweet).size(), //TODO 좋아요 갯수 추가 기능.,
-                                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
-                                searchtweet.getViews(),
-                                searchtweet.getTweetImgList().stream()
-                                        .map(fileName -> s3Url + "/" + fileName)
-                                        .collect(Collectors.toList()),
-                                searchtweet.getCreatedAt()
-                        )
+                .map(searchtweet -> {
+                            int likeTotal = likeRepository.findByTweetId(searchtweet).size();
+
+                            if (Objects.isNull(likeTotal)) {
+                                likeTotal = 0;
+                            }
+                            return new SearchTweetsResponse(
+                                    searchtweet.getId(),
+                                    new TweetUserResponse(
+                                            searchtweet.getUser().getUserId(),
+                                            searchtweet.getUser().getNickname(),
+                                            searchtweet.getUser().getTagName(),
+                                            searchtweet.getUser().getProfileImageUrl()
+                                    ),
+                                    searchtweet.getContent(),
+                                    searchtweet.getHashtag(),
+                                    likeTotal,
+                                    !(likeRepository.findByTweetIdAndEmail(searchtweet, userDetails.getUser().getEmail()).isEmpty()),
+                                    searchtweet.getViews(),
+                                    searchtweet.getTweetImgList().stream()
+                                            .map(fileName -> s3Url + "/" + fileName)
+                                            .collect(Collectors.toList()),
+                                    searchtweet.getCreatedAt()
+                            );
+                        }
                 )
                 .collect(Collectors.toList());
 

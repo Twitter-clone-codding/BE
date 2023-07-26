@@ -54,14 +54,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String email = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
         User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
 
-
         // token 값
         String token = jwtUtil.createToken(email);
         LoginResponse loginResponse = new LoginResponse(
                 token,
                 user.getNickname(),
                 user.getProfileImageUrl(),
-                user.getEmail(),
+                email,
                 user.getTagName()
         );
         jwtUtil.addJwtToCookie(token, response);
@@ -80,18 +79,21 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     // JSON 형식의 응답을 클라이언트로 보내는 메서드
     public void writeJsonResponse(HttpServletRequest request, HttpServletResponse response, LoginResponse loginResponse, String msg) throws IOException {
-
         // HTTP 응답을 설정하는 코드
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 
+        // ObjectMapper 객체를 생성
+        ObjectMapper mapper = new ObjectMapper();
+
         // json 형태로 보낼 문자열
-        String json = "{\"msg\": \"" +msg+ "\",\n\t\"result\": \"" + loginResponse + "\"}";
+        String loginResponseJson = mapper.writeValueAsString(loginResponse); // LoginResponse 객체를 JSON으로 변환
+
+        String json = "{\"msg\": \"" +msg+ "\",\n\t\"result\": " + loginResponseJson + "}";
 
         // json 문자열을 클라이언트로 출력
         PrintWriter writer = response.getWriter();
         writer.print(json);
         writer.flush();
     }
-
 }

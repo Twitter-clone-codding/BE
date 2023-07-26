@@ -1,5 +1,9 @@
 package com.twitter.clone.twitterclone.auth.model.response;
 
+
+import lombok.Getter;
+
+@Getter
 public class LoginResponse {
     private String token;
     private String nickname;

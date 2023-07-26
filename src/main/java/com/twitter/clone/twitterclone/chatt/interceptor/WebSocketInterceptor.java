@@ -23,7 +23,7 @@ public class WebSocketInterceptor implements ChannelInterceptor {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         MessageHeaders headers = message.getHeaders(); //메세지 들어올때 헤더
         MultiValueMap<String, String> map = headers.get(StompHeaderAccessor.NATIVE_HEADERS, MultiValueMap.class);
-
+        //이야기 해야함. header 에 담을수 있는지에 대해.
         if (StompCommand.CONNECT == accessor.getCommand()) {
             System.out.println("웹 소켓 접속함.");
             if(Objects.isNull(map.get("token"))){

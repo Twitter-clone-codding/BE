@@ -57,7 +57,7 @@ public class ReTweetService {
                                     retweet.getContent(),
                                     retweet.getHashtag(),
                                     likeTotal,
-                                    !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
+                                    !(Objects.isNull(likeRepository.findByTweetIdAndEmail(retweet, userDetails.getUser().getEmail()))),
                                     retweet.getViews(),
                                     retweet.getTweetImgList().stream()
                                             .map(fileName -> s3Url + "/" + fileName)

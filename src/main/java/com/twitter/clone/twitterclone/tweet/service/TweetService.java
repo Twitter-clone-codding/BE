@@ -84,7 +84,7 @@ public class TweetService {
                                     a.getContent(),
                                     a.getHashtag(),
                                     likeTotal,
-                                    !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
+                                    !(Objects.isNull(likeRepository.findByTweetIdAndEmail(a, userDetails.getUser().getEmail()))),
                                     a.getViews(),
                                     a.getTweetImgList().stream()
                                             .map(fileName -> s3Url + "/" + fileName)
@@ -146,7 +146,7 @@ public class TweetService {
                             a.getContent(),
                             a.getHashtag(),
                             likeTotal,
-                            !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
+                            !(Objects.isNull(likeRepository.findByTweetIdAndEmail(a, userDetails.getUser().getEmail()))),
                             a.getViews(),
                             a.getTweetImgList().stream()
                                     .map(fileName -> s3Url + "/" + fileName)
@@ -251,7 +251,7 @@ public class TweetService {
                 tweets.getContent(),
                 tweets.getHashtag(),
                 likeTotal,
-                !(likeRepository.findByEmail(userDetails.getUser().getEmail()).isEmpty()),
+                !(Objects.isNull(likeRepository.findByTweetIdAndEmail(tweets, userDetails.getUser().getEmail()))),
                 tweets.getViews(),
                 tweets.getTweetImgList().stream()
                         .map(fileName -> s3Url + "/" + fileName)

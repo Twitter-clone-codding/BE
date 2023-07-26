@@ -1,7 +1,10 @@
-package com.twitter.clone.twitterclone.notice.controller;
+package com.twitter.clone.twitterclone.notification.controller;
 
+import com.twitter.clone.twitterclone.global.model.response.CustomResponse;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
-import com.twitter.clone.twitterclone.notice.service.NotificationService;
+import com.twitter.clone.twitterclone.notification.service.NotificationService;
+import com.twitter.clone.twitterclone.tweet.model.response.TweetsListResponse;
+import com.twitter.clone.twitterclone.tweet.model.type.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,7 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class NotificationController {
 
+    private final NotificationService notificationService;
+
     public static Map<Long, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
+
     @CrossOrigin
     @GetMapping(value = "/notice", consumes = MediaType.ALL_VALUE)
     public SseEmitter subscribe(
@@ -42,6 +49,14 @@ public class NotificationController {
         sseEmitter.onError((e) -> sseEmitters.remove(userId));
 
         return sseEmitter;
+    }
+
+    @GetMapping("/api/notice")
+    public CustomResponse<?>  getNotice(
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ){
+        List<TweetsListResponse> notice = notificationService.getNotice(userDetails.getUser());
+        return CustomResponse.success("알림 조회", notice);
     }
 }
 

@@ -2,19 +2,15 @@ package com.twitter.clone.twitterclone.tweet.controller;
 
 import com.twitter.clone.twitterclone.global.model.response.CustomResponse;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
-import com.twitter.clone.twitterclone.notice.service.NotificationService;
-import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
+import com.twitter.clone.twitterclone.notification.service.NotificationService;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsDeleteRequest;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsPostRequest;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetListAndTotalPageResponse;
-import com.twitter.clone.twitterclone.tweet.model.response.TweetsListResponse;
 import com.twitter.clone.twitterclone.tweet.model.response.TweetsResponse;
 import com.twitter.clone.twitterclone.tweet.model.type.ResponseMessage;
 import com.twitter.clone.twitterclone.tweet.service.TweetService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,10 +42,6 @@ public class TweetController {
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         TweetsResponse tweets = tweetService.postTweet(TweetsPostRequest, img, userDetails);
-
-//        if (tweets.getRetweets() != null) {
-//            notificationService.notifyAddCommentEvent(tweets);
-//        }
 
         return CustomResponse.success(ResponseMessage.TWEET_POST.getMsg(), tweets);
     }

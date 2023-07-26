@@ -9,7 +9,9 @@ import com.twitter.clone.twitterclone.global.execption.type.TweetErrorCode;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
 import com.twitter.clone.twitterclone.global.util.RedisUtil;
 import com.twitter.clone.twitterclone.global.util.S3Util;
-import com.twitter.clone.twitterclone.notice.service.NotificationService;
+import com.twitter.clone.twitterclone.notification.model.entity.Notification;
+import com.twitter.clone.twitterclone.notification.repository.NotificationRepository;
+import com.twitter.clone.twitterclone.notification.service.NotificationService;
 import com.twitter.clone.twitterclone.tweet.model.entity.TweetView;
 import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
 import com.twitter.clone.twitterclone.tweet.model.request.TweetsDeleteRequest;
@@ -31,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,6 +44,7 @@ public class TweetService {
     private final TweetLikeRepository likeRepository;
     private final TweetViewRepository tweetViewRepository;
     private final NotificationService notificationService;
+    private final NotificationRepository notificationRepository;
     private final S3Util s3Util;
     private final RedisUtil redisUtil;
 
@@ -194,13 +196,18 @@ public class TweetService {
             }
         }
         Tweets savetweets;
-        if (!Objects.isNull(tweet.mainTweetId())) { // 메인 트윗 유무
+        if (!Objects.isNull(tweet.mainTweetId())) { // 메인 트윗 유무 확인
+            // 리트윗 작성
             Tweets mainTweet = tweetsRepository.findById(tweet.mainTweetId()).orElseThrow(
                     () -> new TweetExceptionImpl(TweetErrorCode.NO_TWEET));
 
+            savetweets = tweetsRepository.save(new Tweets(tweet, imgUrl, mainTweet, userDetails.getUser()));
+
+            // 알람 서비스 추가
+            notificationRepository.save(new Notification(mainTweet.getUser(), savetweets));
+
             notificationService.notifyAddCommentEvent(mainTweet);
 
-            savetweets = tweetsRepository.save(new Tweets(tweet, imgUrl, mainTweet, userDetails.getUser()));
         } else {
             savetweets = tweetsRepository.save(new Tweets(tweet, imgUrl, userDetails.getUser()));
         }

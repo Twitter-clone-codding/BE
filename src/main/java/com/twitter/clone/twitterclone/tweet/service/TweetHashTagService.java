@@ -18,6 +18,8 @@ public class TweetHashTagService {
 
     public List<HashTagResponse> getHashTagList(){
 
+        int size = 10;
+
         List<HashTagResponse> rankHashtagList = new ArrayList<>();
 
         String hashTags = redisUtil.getString("hashTag");
@@ -34,6 +36,9 @@ public class TweetHashTagService {
         sortedEntries.sort(Map.Entry.<String, Integer>comparingByValue().reversed());
 
         for (Map.Entry<String, Integer> entry : sortedEntries) {
+
+            if(rankHashtagList.size() >= size+1) break;
+
             if(entry.getKey().isEmpty() || entry.getKey().isEmpty()) continue;
             rankHashtagList.add(new HashTagResponse("#"+entry.getKey(), entry.getValue()));
         }

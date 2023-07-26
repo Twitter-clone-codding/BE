@@ -78,7 +78,7 @@ public class SearchTweetService {
                                     searchtweet.getContent(),
                                     searchtweet.getHashtag(),
                                     likeTotal,
-                                    !(Objects.isNull(likeRepository.findByTweetIdAndEmail(searchtweet, userDetails.getUser().getEmail()))),
+                                    Objects.isNull(likeRepository.findByTweetIdAndEmail(searchtweet, userDetails.getUser().getEmail())),
                                     searchtweet.getViews(),
                                     searchtweet.getTweetImgList().stream()
                                             .map(fileName -> s3Url + "/" + fileName)

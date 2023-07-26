@@ -1,7 +1,9 @@
 package com.twitter.clone.twitterclone.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.twitter.clone.twitterclone.auth.model.entity.User;
 import com.twitter.clone.twitterclone.auth.model.request.LoginRequestDto;
+import com.twitter.clone.twitterclone.auth.model.response.LoginResponse;
 import com.twitter.clone.twitterclone.auth.model.type.ResponseMessage;
 import com.twitter.clone.twitterclone.global.util.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -50,13 +52,22 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         log.info("로그인 성공");
         String email = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
+        User user = ((UserDetailsImpl) authResult.getPrincipal()).getUser();
+
 
         // token 값
-        String result = jwtUtil.createToken(email);
-        jwtUtil.addJwtToCookie(result, response);
+        String token = jwtUtil.createToken(email);
+        LoginResponse loginResponse = new LoginResponse(
+                token,
+                user.getNickname(),
+                user.getProfileImageUrl(),
+                user.getEmail(),
+                user.getTagName()
+        );
+        jwtUtil.addJwtToCookie(token, response);
 
         response.setStatus(HttpServletResponse.SC_OK);
-        writeJsonResponse(request , response, result, ResponseMessage.LOGIN_SUCCESS.getMsg());
+        writeJsonResponse(request , response, loginResponse, ResponseMessage.LOGIN_SUCCESS.getMsg());
     }
 
     @Override
@@ -68,14 +79,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     // JSON 형식의 응답을 클라이언트로 보내는 메서드
-    public void writeJsonResponse(HttpServletRequest request, HttpServletResponse response, String result, String msg ) throws IOException {
+    public void writeJsonResponse(HttpServletRequest request, HttpServletResponse response, LoginResponse loginResponse, String msg) throws IOException {
 
         // HTTP 응답을 설정하는 코드
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 
         // json 형태로 보낼 문자열
-        String json = "{\"msg\": \"" +msg+ "\",\n\t\"result\": \"" + result + "\"}";
+        String json = "{\"msg\": \"" +msg+ "\",\n\t\"result\": \"" + loginResponse + "\"}";
 
         // json 문자열을 클라이언트로 출력
         PrintWriter writer = response.getWriter();

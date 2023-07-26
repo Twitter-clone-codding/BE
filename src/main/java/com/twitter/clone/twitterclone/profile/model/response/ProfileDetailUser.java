@@ -1,7 +1,4 @@
-package com.twitter.clone.twitterclone.profile.model.Response;
-
-import com.twitter.clone.twitterclone.auth.common.model.entity.User;
-import com.twitter.clone.twitterclone.tweet.model.entity.Tweets;
+package com.twitter.clone.twitterclone.profile.model.response;
 
 import java.time.LocalDateTime;
 import java.util.List;

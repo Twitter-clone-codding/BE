@@ -19,7 +19,7 @@ public class LogoutController {
 
     private final LogoutService logoutService;
 
-    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/logout", method = RequestMethod.POST)
     public CustomResponse<?> logout(
             HttpServletRequest request,
             HttpServletResponse response

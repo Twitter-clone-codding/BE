@@ -1,4 +1,4 @@
-package com.twitter.clone.twitterclone.profile.model.Response;
+package com.twitter.clone.twitterclone.profile.model.response;
 
 import java.time.LocalDateTime;
 import java.util.List;

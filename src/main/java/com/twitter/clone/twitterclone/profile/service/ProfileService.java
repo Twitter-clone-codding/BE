@@ -3,16 +3,20 @@ package com.twitter.clone.twitterclone.profile.service;
 import com.twitter.clone.twitterclone.auth.model.entity.User;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
 import com.twitter.clone.twitterclone.global.util.S3Util;
-import com.twitter.clone.twitterclone.profile.model.Response.ProfileDetailUser;
-import com.twitter.clone.twitterclone.profile.model.Response.UserTweetsResponse;
+import com.twitter.clone.twitterclone.profile.model.request.ProfileUpdateRequest;
+import com.twitter.clone.twitterclone.profile.model.response.ProfileDetailUser;
+import com.twitter.clone.twitterclone.profile.model.response.UserTweetsResponse;
 import com.twitter.clone.twitterclone.profile.repository.ProfileRepository;
 import com.twitter.clone.twitterclone.tweet.repository.TweetLikeRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
@@ -24,11 +28,21 @@ public class ProfileService {
 
     private String s3Url = "https://twitter-image-storegy.s3.ap-northeast-2.amazonaws.com";
     @Transactional(readOnly = true)
-    public ProfileDetailUser getProfiles(Long userId, UserDetailsImpl userDetails) {
+    public ProfileDetailUser getProfiles(String tagName, UserDetailsImpl userDetails) {
+        log.info(tagName);
+        User user;
 
-        User user = profileRepository.findById(userId).orElseThrow(
-                ()-> new IllegalArgumentException("해당 사용자 존재하지 않습니다.")
-        );
+        if(tagName.isEmpty() || tagName == null){
+            log.info(userDetails.getUser().getEmail());
+           user = profileRepository.findById(userDetails.getUser().getUserId()).orElseThrow(
+                    ()-> new IllegalArgumentException("해당사용자가아닙니다.")
+            );
+        }else{
+            user = profileRepository.findBytagName(tagName).orElseThrow(
+                    ()-> new IllegalArgumentException("해당 사용자가 아닙니다.")
+            );
+        }
+
 
 
         return new ProfileDetailUser(
@@ -56,6 +70,50 @@ public class ProfileService {
                               )
 
                       ).collect(Collectors.toList()));
+    }
 
+
+
+    public void updateProfile(UserDetailsImpl userDetails, ProfileUpdateRequest profileUpdateRequest) {
+        User user = profileRepository.findById(userDetails.getUser().getUserId()).orElseThrow(
+                () -> new IllegalArgumentException("")
+        );
+
+        if(profileUpdateRequest != null){
+            String nickname = profileUpdateRequest.nickname();
+            if(nickname == null || nickname.isEmpty()) {
+                throw new IllegalArgumentException("");
+            }
+
+            if (nickname.length() > 15){
+                throw new IllegalArgumentException("닉네임 15자 미만");
+            }
+
+            user.setNickname(nickname);
+
+            MultipartFile profileImg = profileUpdateRequest.profileImageUrl();
+            if(profileImg != null){
+                String profileImageUrl = s3Util.saveFile(profileImg, "profileImg");
+                user.setProfileImageUrl(profileImageUrl);
+            }
+
+            MultipartFile profileBackgroundImage = profileUpdateRequest.profileBackgroundUrl();
+            if(profileBackgroundImage != null) {
+                String profileBackgroundImg = s3Util.saveFile(profileBackgroundImage, "profileBackgroundImage");
+                user.setProfileBackgroundImageUrl(profileBackgroundImg);
+            }
+
+            String url = profileUpdateRequest.url();
+            if (url != null) {
+                user.setUrl(url);
+            }
+
+            String content = profileUpdateRequest.content();
+            if(content != null){
+                user.setContent(content);
+            }
+
+            profileRepository.save(user);
+        }
     }
 }

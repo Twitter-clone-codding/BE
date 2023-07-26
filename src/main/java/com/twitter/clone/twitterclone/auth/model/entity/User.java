@@ -77,5 +77,6 @@ public class User extends Auditing {
         this.birthday = birthday;
         this.tagName = tagName;
     }
+  
 
 }

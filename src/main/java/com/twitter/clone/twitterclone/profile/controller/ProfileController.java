@@ -20,16 +20,16 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @GetMapping("/{tagName}")
-    public CustomResponse<?> getProfiles(@PathVariable(required = false) String tagName ,@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public CustomResponse<?> getProfiles(@PathVariable String tagName, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         log.info(tagName);
 
-        ProfileDetailUser profileDetailUser = profileService.getProfiles(tagName,userDetails);
+        ProfileDetailUser profileDetailUser = profileService.getProfiles(tagName, userDetails);
         return CustomResponse.success("프로필을 조회하셨습니다.", profileDetailUser);
     }
 
     @PutMapping("")
-    public CustomResponse<String>updateProfile(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                               @ModelAttribute ProfileUpdateRequest profileUpdateRequest){
+    public CustomResponse<String> updateProfile(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                @ModelAttribute ProfileUpdateRequest profileUpdateRequest) {
 //        log.info(userDetails.getUser().getNickname());
 //        log.info(userDetails.getUser().getProfileImageUrl());
 //        log.info(userDetails.getUser().getProfileBackgroundImageUrl());

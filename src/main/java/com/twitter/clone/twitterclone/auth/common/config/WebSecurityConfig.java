@@ -1,10 +1,6 @@
 package com.twitter.clone.twitterclone.auth.common.config;
 
 import com.twitter.clone.twitterclone.auth.common.repository.UserRepository;
-import com.twitter.clone.twitterclone.auth.oauthlogin.handler.OAuthLoginFailureHandler;
-import com.twitter.clone.twitterclone.auth.oauthlogin.handler.OAuthLoginSuccessHandler;
-import com.twitter.clone.twitterclone.auth.oauthlogin.service.CustomOAuthUserService;
-import com.twitter.clone.twitterclone.auth.oauthlogin.service.UserService;
 import com.twitter.clone.twitterclone.global.security.JwtAuthenticationFilter;
 import com.twitter.clone.twitterclone.global.security.JwtAuthorizationFilter;
 import com.twitter.clone.twitterclone.global.security.UserDetailsServiceImpl;
@@ -38,9 +34,6 @@ public class WebSecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
 
-    private final CustomOAuthUserService userService;
-    private final OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
-    private final OAuthLoginFailureHandler oAuthLoginFailureHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -70,13 +63,6 @@ public class WebSecurityConfig {
         http.sessionManagement((sessionManagement) ->
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
-        http
-                .oauth2Login(oauth2Login -> oauth2Login
-                        .loginPage("/oauth/login") // OAuth2 로그인 페이지를 "/login"으로 설정
-                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(userService)) // OAuth2 로그인 후 사용자 정보를 가져오는 데 사용할 서비스를 userService로 설정
-                        .successHandler(oAuthLoginSuccessHandler) // OAuth2 로그인 성공 시 실행할 핸들러 설정
-                        .failureHandler(oAuthLoginFailureHandler)); // OAuth2 로그인 실패 시 실행할 핸들러 설정
-
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정

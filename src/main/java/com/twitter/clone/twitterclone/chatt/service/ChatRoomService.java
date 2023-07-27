@@ -49,26 +49,43 @@ public class ChatRoomService {
 
         List<ChatRoomResponse> tweetUserResponses = new ArrayList<>();
 
-        List<ChatRoom> senderChatRoomList = chatRoomRepository.findAllBySender(user.getUserId());
+        List<ChatRoom> chatRoomList = chatRoomRepository.findAllBySenderOrReceiver(user.getUserId(), user.getUserId());
 
-        for (ChatRoom chatRoom : senderChatRoomList) {
-            User receiver = userRepository.findById(chatRoom.getReceiver())
-                    .orElseThrow(() -> {
-                        throw new ChatExceptionImpl(ChatErrorCode.NO_RECEIVER_USER);
-                    });
-            tweetUserResponses.add(new ChatRoomResponse(receiver.getUserId(), receiver.getNickname(), receiver.getTagName(), receiver.getProfileImageUrl(), chatRoom.getRoomKey()));
+        for (ChatRoom chatRoom : chatRoomList) {
+            User otherUser;
+            if (chatRoom.getSender().equals(user.getUserId())) {
+                otherUser = userRepository.findById(chatRoom.getReceiver())
+                        .orElseThrow(() -> new ChatExceptionImpl(ChatErrorCode.NO_RECEIVER_USER));
+            } else {
+                otherUser = userRepository.findById(chatRoom.getSender())
+                        .orElseThrow(() -> new ChatExceptionImpl(ChatErrorCode.NO_RECEIVER_USER));
+            }
+            tweetUserResponses.add(new ChatRoomResponse(otherUser.getUserId(), otherUser.getNickname(), otherUser.getTagName(), otherUser.getProfileImageUrl(), chatRoom.getRoomKey()));
         }
 
-        List<ChatRoom> receiverChatRoomList = chatRoomRepository.findAllByReceiver(user.getUserId());
+//        for (ChatRoom chatRoom : senderChatRoomList) {
+//            User receiver = userRepository.findById(chatRoom.getReceiver())
+//                    .orElseThrow(() -> {
+//                        throw new ChatExceptionImpl(ChatErrorCode.NO_RECEIVER_USER);
+//                    });
+//            tweetUserResponses.add(new ChatRoomResponse(receiver.getUserId(), receiver.getNickname(), receiver.getTagName(), receiver.getProfileImageUrl(), chatRoom.getRoomKey()));
+//        }
+//
+//        List<ChatRoom> receiverChatRoomList = chatRoomRepository.findAllByReceiver(user.getUserId());
+//
+//        for (ChatRoom chatRoom : receiverChatRoomList) {
+//            User receiver = userRepository.findById(chatRoom.getReceiver())
+//                    .orElseThrow(() -> {
+//                        throw new ChatExceptionImpl(ChatErrorCode.NO_RECEIVER_USER);
+//                    });
+//            tweetUserResponses.add(new ChatRoomResponse(receiver.getUserId(), receiver.getNickname(), receiver.getTagName(), receiver.getProfileImageUrl(), chatRoom.getRoomKey()));
+//        }
 
-        for (ChatRoom chatRoom : receiverChatRoomList) {
-            User receiver = userRepository.findById(chatRoom.getReceiver())
-                    .orElseThrow(() -> {
-                        throw new ChatExceptionImpl(ChatErrorCode.NO_RECEIVER_USER);
-                    });
-            tweetUserResponses.add(new ChatRoomResponse(receiver.getUserId(), receiver.getNickname(), receiver.getTagName(), receiver.getProfileImageUrl(), chatRoom.getRoomKey()));
-        }
-
+//        for (ChatRoomResponse chatRoomResponse : tweetUserResponses) {
+//            if(tweetUserResponses.contains(chatRoomResponse)){
+//                tweetUserResponses.remove(chatRoomResponse);
+//            }
+//        }
 
         return tweetUserResponses;
     }

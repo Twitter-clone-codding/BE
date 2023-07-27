@@ -17,6 +17,7 @@ import java.util.Objects;
 public class WebSocketInterceptor implements ChannelInterceptor {
 
 
+
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
@@ -26,10 +27,6 @@ public class WebSocketInterceptor implements ChannelInterceptor {
         //이야기 해야함. header 에 담을수 있는지에 대해.
         if (StompCommand.CONNECT == accessor.getCommand()) {
             System.out.println("웹 소켓 접속함.");
-            if(Objects.isNull(map.get("token"))){
-                return null;
-            }
-
         }
         return message;
     }

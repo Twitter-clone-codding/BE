@@ -167,9 +167,6 @@ public class TweetService {
 
     @Transactional
     public TweetsResponse postTweet(TweetsPostRequest tweet, List<MultipartFile> img, UserDetailsImpl userDetails) {
-        /**
-         * 이미지 저장후에 게시글이 저장 실패시 이미지 처리 생각해야함
-         */
         List<String> imgUrl = Collections.emptyList();
         if (!Objects.isNull(img)) {
             imgUrl = s3Util.saveListFile(img);
@@ -200,12 +197,10 @@ public class TweetService {
             // 리트윗 작성
             Tweets mainTweet = tweetsRepository.findById(tweet.mainTweetId()).orElseThrow(
                     () -> new TweetExceptionImpl(TweetErrorCode.NO_TWEET));
-
             savetweets = tweetsRepository.save(new Tweets(tweet, imgUrl, mainTweet, userDetails.getUser()));
-
             // 알람 서비스 추가
             notificationRepository.save(new Notification(mainTweet.getUser(), savetweets));
-
+            // sse 서비스 추가
             notificationService.notifyAddCommentEvent(mainTweet);
 
         } else {
@@ -232,14 +227,11 @@ public class TweetService {
     }
 
     @Transactional
-    public TweetsResponse getDetailTweet(Long mainTweetId, UserDetailsImpl userDetails) { // 유저 추가는 나중에
-        // 메인 트윗 유무
+    public TweetsResponse getDetailTweet(Long mainTweetId, UserDetailsImpl userDetails) {
         Tweets tweets = tweetsRepository.findById(mainTweetId).orElseThrow(
                 () -> new TweetExceptionImpl(TweetErrorCode.NO_TWEET)
         );
-
         TweetView tweetView = tweetViewRepository.findByTweetIdAndUserId(tweets, userDetails.getUser());
-
         //조회수 카운트 증가 중복
         if (tweetView == null) {
             tweets.setViews(tweets.getViews() + 1);
@@ -251,7 +243,6 @@ public class TweetService {
         if (Objects.isNull(likeTotal)) {
             likeTotal = 0;
         }
-        // 하트 카운트 조회후에 넣어야함
         return new TweetsResponse(
                 tweets.getId(),
                 new TweetUserResponse(

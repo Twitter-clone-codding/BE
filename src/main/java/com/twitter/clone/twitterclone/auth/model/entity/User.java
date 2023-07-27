@@ -69,7 +69,6 @@ public class User extends Auditing {
         this.googleId = googleId;
         this.profileImageUrl = profileImageUrl;
     }
-
     // 일반 회원가입
     public User(String email, String password, String nickname, String birthday, String tagName) {
         this.email = email;
@@ -78,6 +77,4 @@ public class User extends Auditing {
         this.birthday = birthday;
         this.tagName = tagName;
     }
-  
-
 }

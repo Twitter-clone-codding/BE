@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TweetsRepository extends JpaRepository<Tweets, Long> {
-
     Page<Tweets> findAllByUser(User user, Pageable pageable);
 
 }

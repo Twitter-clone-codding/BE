@@ -1,5 +1,7 @@
 package com.twitter.clone.twitterclone.search.service;
 
+import com.twitter.clone.twitterclone.global.execption.SearchExceptionImpl;
+import com.twitter.clone.twitterclone.global.execption.type.SearchErrorCode;
 import com.twitter.clone.twitterclone.global.security.UserDetailsImpl;
 import com.twitter.clone.twitterclone.search.model.response.SearchTweetListAndTotalPageResponse;
 import com.twitter.clone.twitterclone.search.model.response.SearchTweetsResponse;
@@ -35,7 +37,7 @@ public class SearchTweetService {
     public SearchTweetListAndTotalPageResponse SearchTweetPostList(Integer page, Integer limit, String search, UserDetailsImpl userDetails) {
 
         if (search == null) {
-            throw new IllegalArgumentException("검색어가 없습니다.");
+            throw new SearchExceptionImpl(SearchErrorCode.SEARCH_NULL);
         }
 
         Sort.Direction direction = Sort.Direction.DESC;
@@ -43,15 +45,11 @@ public class SearchTweetService {
 
         Pageable pageable = PageRequest.of(page, limit, sort);
         Page<Tweets> searchContaining = null;
-        System.out.println("search : " + search);
-        System.out.println("search.contains(#): " + search.contains("#"));
         if (search.contains("#")) {
             // 해시태그 검색
-            System.out.println("# search");
-            searchContaining = searchTweetRepository.findByHashtagContaining(pageable, search); //findByHashtagLike 대소문자 구분 없이 검색
+            searchContaining = searchTweetRepository.findByHashtagContaining(pageable, search);
         } else {
             // 컨텐츠 검색
-            System.out.println("content search");
             searchContaining = searchTweetRepository.findByContentContaining(pageable, search);
         }
 
@@ -59,7 +57,6 @@ public class SearchTweetService {
             return new SearchTweetListAndTotalPageResponse(Collections.emptyList(), 0);
         }
 
-        System.out.println("??? : " + searchContaining.get().toList().get(0).getUser());
         List<SearchTweetsResponse> searchTweetsListResponseList = searchContaining.stream()
                 .map(searchtweet -> {
                             int likeTotal = likeRepository.findByTweetId(searchtweet).size();

@@ -66,10 +66,7 @@ public class ReTweetService {
                                     retweet.getRetweets().getId()
                             );
                         }
-                )
-
-                .collect(Collectors.toList());
-
+                ).collect(Collectors.toList());
         return new TweetListAndTotalPageResponse(reTweetsListResponseList, retweets.getTotalPages());
     }
 }

@@ -16,9 +16,7 @@ public class LogoutService {
                 cookie.setMaxAge(0);
                 cookie.setPath("/");
                 response.addCookie(cookie);
-
             }
         }
     }
-
 }

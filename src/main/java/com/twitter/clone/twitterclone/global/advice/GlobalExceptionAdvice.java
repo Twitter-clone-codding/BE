@@ -40,6 +40,11 @@ public class GlobalExceptionAdvice {
         return CustomResponse.error(e);
     }
 
+    @ExceptionHandler(SearchExceptionImpl.class)
+    public ResponseEntity<?> chatErrorHandler(SearchExceptionImpl e){
+        return CustomResponse.error(e);
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> vaildationErrorHandler(MethodArgumentNotValidException e) {

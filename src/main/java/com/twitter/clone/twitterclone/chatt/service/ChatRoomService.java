@@ -56,7 +56,7 @@ public class ChatRoomService {
                     .orElseThrow(() -> {
                         throw new ChatExceptionImpl(ChatErrorCode.NO_RECEIVER_USER);
                     });
-            tweetUserResponses.add(new ChatRoomResponse(receiver.getUserId(), receiver.getNickname(), receiver.getTagName(), receiver.getProfileImageUrl(),chatRoom.getRoomKey()));
+            tweetUserResponses.add(new ChatRoomResponse(receiver.getUserId(), receiver.getNickname(), receiver.getTagName(), receiver.getProfileImageUrl(), chatRoom.getRoomKey()));
         }
 
         List<ChatRoom> receiverChatRoomList = chatRoomRepository.findAllByReceiver(user.getUserId());
@@ -66,7 +66,13 @@ public class ChatRoomService {
                     .orElseThrow(() -> {
                         throw new ChatExceptionImpl(ChatErrorCode.NO_RECEIVER_USER);
                     });
-            tweetUserResponses.add(new ChatRoomResponse(receiver.getUserId(), receiver.getNickname(), receiver.getTagName(), receiver.getProfileImageUrl(),chatRoom.getRoomKey()));
+            tweetUserResponses.add(new ChatRoomResponse(receiver.getUserId(), receiver.getNickname(), receiver.getTagName(), receiver.getProfileImageUrl(), chatRoom.getRoomKey()));
+        }
+
+        for (ChatRoomResponse chatRoomResponse : tweetUserResponses) {
+            if(tweetUserResponses.contains(chatRoomResponse)){
+                tweetUserResponses.remove(chatRoomResponse);
+            }
         }
 
         return tweetUserResponses;

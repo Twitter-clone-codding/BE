@@ -1,5 +1,7 @@
 # twitter-clone
-Git Commit 컨벤션
+
+---
+# Git Commit 컨벤션
 
 feat : 새로운 기능 추가
 
@@ -26,3 +28,20 @@ remove : 파일을 삭제하는 작업만 수행한 경우
 !BREAKING CHANGE : 커다란 API 변경의 경우
 
 !HOTFIX : 급하게 치명적인 버그를 고쳐야 하는 경우
+
+---
+
+# 기술스택
+
+### Back-end
+#### Environment
+<img src="https://img.shields.io/badge/intelliJ-000000?style=flat&logo=intellijidea&logoColor=white">
+
+
+#### Development
+<img src="https://img.shields.io/badge/springboot-6DB33F?style=flat&logo=springboot&logoColor=white">
+
+#### Distribution - CI / CD
+<img src="https://img.shields.io/badge/AmazonAWS-FF9900?style=flat&logo=amazonaws&logoColor=white"> <img src="https://img.shields.io/badge/AmazonS3-569A31?style=flat&logo=amazons3&logoColor=white"> <img src="https://img.shields.io/badge/AmazonEC2-FF9900?style=flat&logo=amazonec2&logoColor=white"> <img src="https://img.shields.io/badge/AmazonRDS-527FFF?style=flat&logo=amazonrds&logoColor=white"> <img src="https://img.shields.io/badge/GithubActions-2088FF?style=flat&logo=githubactions&logoColor=white">
+
+---

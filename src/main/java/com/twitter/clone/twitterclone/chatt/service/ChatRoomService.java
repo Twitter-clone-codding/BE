@@ -69,11 +69,6 @@ public class ChatRoomService {
             tweetUserResponses.add(new ChatRoomResponse(receiver.getUserId(), receiver.getNickname(), receiver.getTagName(), receiver.getProfileImageUrl(), chatRoom.getRoomKey()));
         }
 
-        for (ChatRoomResponse chatRoomResponse : tweetUserResponses) {
-            if(tweetUserResponses.contains(chatRoomResponse)){
-                tweetUserResponses.remove(chatRoomResponse);
-            }
-        }
 
         return tweetUserResponses;
     }

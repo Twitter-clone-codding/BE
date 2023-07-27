@@ -9,6 +9,7 @@ import com.twitter.clone.twitterclone.profile.model.request.ProfileUpdateRequest
 import com.twitter.clone.twitterclone.profile.model.response.ProfileDetailUser;
 import com.twitter.clone.twitterclone.profile.model.response.UserTweetsResponse;
 import com.twitter.clone.twitterclone.profile.repository.ProfileRepository;
+import com.twitter.clone.twitterclone.tweet.model.response.TweetUserResponse;
 import com.twitter.clone.twitterclone.tweet.repository.TweetLikeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,6 +68,12 @@ public class ProfileService {
 
                                     return new UserTweetsResponse(
                                             tweets.getId(),
+                                            new TweetUserResponse(
+                                                    tweets.getUser().getUserId(),
+                                                    tweets.getUser().getNickname(),
+                                                    tweets.getUser().getTagName(),
+                                                    tweets.getUser().getProfileImageUrl()
+                                            ),
                                             tweets.getContent(),
                                             tweets.getHashtag(),
                                             likeTotal,
